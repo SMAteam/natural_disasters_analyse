@@ -1,0 +1,540 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+        <title>Social media monitor for crisis</title>
+        <meta content="Admin Dashboard" name="description" />
+        <meta content="Themesbrand" name="author" />
+        <link rel="shortcut icon" href="../static/assets/images/favicon.ico">
+
+        <link href="../static/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+        <link href="../static/assets/css/metismenu.min.css" rel="stylesheet" type="text/css">
+        <link href="../static/assets/css/icons.css" rel="stylesheet" type="text/css">
+        <link href="../static/assets/css/style.css" rel="stylesheet" type="text/css">
+    </head>
+
+    <body>
+
+        <!-- Begin page -->
+        <div id="wrapper">
+
+            <!-- Top Bar Start -->
+            <div class="topbar">
+
+                <!-- LOGO -->
+                <div class="topbar-left">
+
+                </div>
+
+                 <nav class="navbar-custom">
+
+                    <ul class="navbar-right d-flex list-inline float-right mb-0">
+                        <li class="dropdown notification-list d-none d-sm-block">
+                            <form role="search" class="app-search">
+                                <div class="form-group mb-0">
+                                    <input type="text" class="form-control" placeholder="Search..">
+                                    <button type="submit"><i class="fa fa-search"></i></button>
+                                </div>
+                            </form>
+                        </li>
+
+                        <li class="dropdown notification-list">
+                            <a class="nav-link dropdown-toggle arrow-none waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                                <i class="mdi mdi-bell noti-icon"></i>
+                                <span class="badge badge-pill badge-info noti-icon-badge">3</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg">
+                                <!-- item-->
+                                <h6 class="dropdown-item-text">
+                                    Notifications
+                                </h6>
+                                <!-- All-->
+                                <a href="javascript:void(0);" class="dropdown-item text-center text-primary">
+                                    View all <i class="fi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="dropdown notification-list">
+                            <div class="dropdown notification-list nav-pro-img">
+                                <a class="dropdown-toggle nav-link arrow-none waves-effect nav-user waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                                    <img src="../static/assets/images/users/user-4.jpg" alt="user" class="rounded-circle">
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                    <ul class="list-inline menu-left mb-0">
+                        <li class="float-left">
+                            <button class="button-menu-mobile open-left waves-effect waves-light">
+                                <i class="mdi mdi-menu"></i>
+                            </button>
+                        </li>
+                    </ul>
+
+                </nav>
+
+            </div>
+            <!-- Top Bar End -->
+
+          <!-- ========== Left Sidebar Start ========== -->
+            <div class="left side-menu">
+                <div class="slimscroll-menu" id="remove-scroll">
+
+                    <!--- Sidemenu -->
+                    <div id="sidebar-menu">
+                        <!-- Left Menu Start -->
+                        <ul class="metismenu" id="side-menu">
+                            <li class="menu-title">Main</li>
+                            <li>
+                                <a href="home" class="waves-effect">
+                                    <i class="mdi mdi-home"></i><span class="badge badge-primary float-right">3</span> <span> Dashboard </span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-email"></i><span> 历史文本 <span class="float-right menu-arrow"><i class="mdi mdi-plus"></i></span> </span></a>
+                                <ul class="submenu">
+                                    <li><a href="history?type=0&relevant=0">自然灾害</a></li>
+{#									<li><a href="history2?type=0">疫情</a></li>#}
+                                </ul>
+                            </li>
+
+                            <li>
+                                <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-google-maps"></i><span> 地图标注 <span class="float-right menu-arrow"><i class="mdi mdi-plus"></i></span></span></a>
+                                <ul class="submenu">
+                                    <li><a href="map_">地震</a></li>
+									<li><a href="map_2">台风</a></li>
+									<li><a href="map_3">暴雨</a></li>
+                                </ul>
+                            </li>
+
+							<li>
+                                <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-finance"></i><span> 统计特征 <span class="float-right menu-arrow"><i class="mdi mdi-plus"></i></span> </span></a>
+                                <ul class="submenu">
+                                    <li><a href="statistical">自然灾害</a></li>
+{#                                    <li><a href="statistical2">疫情</a></li>#}
+                                </ul>
+                            </li>
+                        </ul>
+
+                    </div>
+                    <!-- Sidebar -->
+                    <div class="clearfix"></div>
+
+                </div>
+                <!-- Sidebar -left -->
+
+            </div>
+            <!-- Left Sidebar End -->
+
+            <!-- ============================================================== -->
+            <!-- Start right Content here -->
+            <!-- ============================================================== -->
+            <div class="content-page">
+                <!-- Start content -->
+                <div class="content">
+                    <div class="container-fluid">
+						<div class="row">
+								<div class="col-sm-12">
+									<div class="page-title-box">
+										<h4 class="page-title">Dashboard</h4>
+										<ol class="breadcrumb">
+											<li class="breadcrumb-item active">Welcome to social media monitor for crisis</li>
+										</ol>
+									</div>
+								</div>
+							</div>
+                        <div class="page-content-wrapper">
+							<div class="row">
+								<h6 style='font-weight: bold; font-size: 30px;'>地震</h6>
+							</div>
+                            <div class="row">
+                                <div class="col-xl-6">
+                                    <div class="card m-b-20">
+                                        <div class="card-body">
+                                            <h4 class="mt-0 header-title">各地区微博数量</h4>
+                                            <ul class="list-inline widget-chart m-t-20 m-b-15 text-center">
+                                                <li class="list-inline-item">
+                                                    <h5 class="mb-0">{{ earthquake_brief.count }}</h5>
+                                                    <p class="text-muted">总数据量</p>
+                                                </li>
+                                                <li class="list-inline-item">
+
+													<h5 class="mb-0">{{ earthquake_brief.num }}</h5>
+                                                    <p class="text-muted">受灾地数量</p>
+                                                </li>
+                                                <li class="list-inline-item">
+                                                    <h5 class="mb-0">{{ earthquake_brief.month }}</h5>
+                                                    <p class="text-muted">数据最多的月份</p>
+                                                </li>
+                                            </ul>
+
+                                            <div id="pie" class="dashboard-charts morris-charts"></div>
+                                        </div>
+                                    </div>
+                                </div> <!-- end col -->
+
+                                <div class="col-xl-6">
+                                    <div class="card m-b-20">
+                                        <div class="card-body">
+                                            <h4 class="mt-0 header-title">热议灾难事件</h4>
+                                            <table class="table mb-0">
+												<thead>
+													<tr>
+														<th>#</th>
+														<th>时间</th>
+														<th>地点</th>
+														<th>条数</th>
+													</tr>
+											   </thead>
+											   <tbody>
+													{% for row in earthquake_information %}
+                                                        <tr>
+															<th>{{ row.num }}</th>
+															<th>{{ row.time }}</th>
+															<th>{{ row.location }}</th>
+															<th>{{ row.count }}</th>
+                                                        </tr>
+
+                                                    {% endfor %}
+											   </tbody>
+											</table>
+                                        </div>
+                                    </div>
+                                </div> <!-- end col -->
+                            </div> <!-- end row -->
+
+							<div class="row">
+								<h6 style='font-weight: bold; font-size: 30px;'>台风</h6>
+							</div>
+
+
+							<div class="row">
+                                <div class="col-xl-6">
+                                    <div class="card m-b-20">
+                                        <div class="card-body">
+                                            <h4 class="mt-0 header-title">各地区微博数量</h4>
+                                            <ul class="list-inline widget-chart m-t-20 m-b-15 text-center">
+                                                <li class="list-inline-item">
+                                                    <h5 class="mb-0">{{ typhoon_brief.count }}</h5>
+                                                    <p class="text-muted">总数据量</p>
+                                                </li>
+                                                <li class="list-inline-item">
+													<h5 class="mb-0">{{ typhoon_brief.num }}</h5>
+                                                    <p class="text-muted">受灾地数量</p>
+                                                </li>
+                                                <li class="list-inline-item">
+                                                    <h5 class="mb-0">{{ typhoon_brief.month }}</h5>
+                                                    <p class="text-muted">数据最多的月份</p>
+                                                </li>
+                                            </ul>
+
+                                            <div id="pie2" class="dashboard-charts morris-charts"></div>
+                                        </div>
+                                    </div>
+                                </div> <!-- end col -->
+
+                                <div class="col-xl-6">
+                                    <div class="card m-b-20">
+                                        <div class="card-body">
+                                            <h4 class="mt-0 header-title">热议灾难事件</h4>
+                                            <table class="table mb-0">
+												<thead>
+													<tr>
+														<th>#</th>
+														<th>时间</th>
+														<th>地点</th>
+														<th>条数</th>
+													</tr>
+											   </thead>
+											   <tbody>
+                                                    {% for row in typhoon_information %}
+                                                        <tr>
+															<th>{{ row.num }}</th>
+															<th>{{ row.time }}</th>
+															<th>{{ row.location }}</th>
+															<th>{{ row.count }}</th>
+                                                        </tr>
+
+                                                    {% endfor %}
+											   </tbody>
+											</table>
+                                        </div>
+                                    </div>
+                                </div> <!-- end col -->
+                            </div> <!-- end row -->
+
+							<div class="row">
+								<h6 style='font-weight: bold; font-size: 30px;'>暴雨</h6>
+							</div>
+
+							<div class="row">
+                                <div class="col-xl-6">
+                                    <div class="card m-b-20">
+                                        <div class="card-body">
+                                            <h4 class="mt-0 header-title">各地区微博数量</h4>
+                                            <ul class="list-inline widget-chart m-t-20 m-b-15 text-center">
+                                                <li class="list-inline-item">
+                                                    <h5 class="mb-0">{{ rainstorm_brief.count }}</h5>
+                                                    <p class="text-muted">总数据量</p>
+                                                </li>
+                                                <li class="list-inline-item">
+													<h5 class="mb-0">{{ rainstorm_brief.num }}</h5>
+                                                    <p class="text-muted">受灾地数量</p>
+                                                </li>
+                                                <li class="list-inline-item">
+                                                    <h5 class="mb-0">{{ rainstorm_brief.month }}</h5>
+                                                    <p class="text-muted">数据最多的月份</p>
+                                                </li>
+                                            </ul>
+
+                                            <div id="pie3" class="dashboard-charts morris-charts"></div>
+                                        </div>
+                                    </div>
+                                </div> <!-- end col -->
+
+                                <div class="col-xl-6">
+                                    <div class="card m-b-20">
+                                        <div class="card-body">
+                                            <h4 class="mt-0 header-title">热议灾难事件</h4>
+                                            <table class="table mb-0">
+												<thead>
+													<tr>
+														<th>#</th>
+														<th>时间</th>
+														<th>地点</th>
+														<th>条数</th>
+													</tr>
+											   </thead>
+											   <tbody>
+											        {% for row in rainstorm_information %}
+                                                        <tr>
+															<th>{{ row.num }}</th>
+															<th>{{ row.time }}</th>
+															<th>{{ row.location }}</th>
+															<th>{{ row.count }}</th>
+                                                        </tr>
+
+                                                    {% endfor %}
+											   </tbody>
+											</table>
+                                        </div>
+                                    </div>
+                                </div> <!-- end col -->
+                            </div> <!-- end row -->
+
+							<div class="row">
+								<h6 style='font-weight: bold; font-size: 30px;'>自然灾害对社会产生的影响</h6>
+							</div>
+
+							<div class="row">
+                                <div class="col-xl-4">
+                                    <div class="card m-b-20">
+                                        <div class="card-body">
+											<h4 class="mt-0 header-title">人员伤亡</h4>
+											<div id="pie_people" class="dashboard-charts morris-charts"></div>
+										</div>
+									</div>
+                                </div> <!-- end col -->
+                                  <div class="col-xl-4">
+                                    <div class="card m-b-20">
+                                        <div class="card-body">
+                                            <h4 class="mt-0 header-title">房屋损失</h4>
+											<div id="pie_house" class="dashboard-charts morris-charts"></div>
+                                        </div>
+                                    </div>
+                                </div> <!-- end col -->
+
+                                <div class="col-xl-4">
+                                    <div class="card m-b-20">
+                                        <div class="card-body">
+                                            <h4 class="mt-0 header-title">财产损失</h4>
+											<div id="pie_property" class="dashboard-charts morris-charts"></div>
+                                        </div>
+                                    </div>
+                                </div> <!-- end col -->
+                            </div> <!-- end row -->
+
+
+							<div class="row">
+                                <div class="col-xl-6">
+                                    <div class="card m-b-20">
+                                        <div class="card-body">
+                                            <h4 class="mt-0 header-title">交通影响</h4>
+											<div id="pie_transport" class="dashboard-charts morris-charts"></div>
+                                        </div>
+                                    </div>
+                                </div> <!-- end col -->
+
+								<div class="col-xl-6">
+                                    <div class="card m-b-20">
+                                        <div class="card-body">
+                                            <h4 class="mt-0 header-title">农业影响</h4>
+											<div id="pie_ar" class="dashboard-charts morris-charts"></div>
+                                        </div>
+                                    </div>
+                                </div> <!-- end col -->
+                            </div> <!-- end row -->
+                        </div><!-- end page content-->
+                    </div> <!-- container-fluid -->
+
+                </div> <!-- content -->
+            </div>
+
+
+            <!-- ============================================================== -->
+            <!-- End Right content here -->
+            <!-- ============================================================== -->
+
+
+        </div>
+
+        <!-- END wrapper -->
+        <script src="../static/assets/js/jquery.min.js"></script>
+        <script src="../static/assets/js/bootstrap.bundle.min.js"></script>
+        <script src="../static/assets/js/metisMenu.min.js"></script>
+        <script src="../static/assets/js/jquery.slimscroll.js"></script>
+        <script src="../static/assets/js/waves.min.js"></script>
+
+        <script src="../static/plugins/jquery-sparkline/jquery.sparkline.min.js"></script>
+
+        <script src="../static/plugins/peity/jquery.peity.min.js"></script>
+
+        <script src="../static/plugins/morris/morris.min.js"></script>
+        <script src="../static/plugins/raphael/raphael-min.js"></script>
+		<script src="../static/plugins/chartist/js/chartist.min.js"></script>
+        <script src="../static/plugins/chartist/js/chartist-plugin-tooltip.min.js"></script>
+
+		<script src="../static/plugins/peity/jquery.peity.min.js"></script>
+		<script src="../static/plugins/peity/jquery.peity.js"></script>
+
+		<script src="../static/assets/pages/morris.init.js"></script>
+		<script src="../static/assets/pages/chartist.init.js"></script>
+
+        <script src="../static/assets/js/app.js"></script>
+        <script language='javascript'>
+            var data = {{ datajson|safe }};
+            var hoverBackgroundColor = {{ hoverjson|safe }};
+
+            var data2 = {{ datajson2|safe }};
+            var hoverBackgroundColor2 = {{ hoverjson2|safe }};
+
+            var data3 = {{ datajson3|safe }};
+            var hoverBackgroundColor3 = {{ hoverjson3|safe }};
+
+            var data4 = {{ datajson4|safe }};
+            var hoverBackgroundColor4 = {{ hoverjson4|safe }};
+
+            var data5 = {{ datajson5|safe }};
+            var hoverBackgroundColor5 = {{ hoverjson5|safe }};
+
+            var data6 = {{ datajson6|safe }};
+            var hoverBackgroundColor6 = {{ hoverjson6|safe }};
+
+            var data7 = {{ datajson7|safe }};
+            var hoverBackgroundColor7 = {{ hoverjson7|safe }};
+
+            var data8 = {{ datajson8|safe }};
+            var hoverBackgroundColor8 = {{ hoverjson8|safe }};
+        </script>
+
+
+		<script language='javascript'>
+
+			Morris.Donut({
+				element: 'pie',
+				data: data,
+				resize: true,
+				colors: hoverBackgroundColor
+			});
+
+			$('.peity-donut').each(function () {
+				$(this).peity("donut", $(this).data());
+			});
+
+			Morris.Donut({
+				element: 'pie2',
+				data: data2,
+				resize: true,
+				colors: hoverBackgroundColor2
+			});
+
+			$('.peity-donut').each(function () {
+				$(this).peity("donut", $(this).data());
+			});
+
+			Morris.Donut({
+				element: 'pie3',
+				data: data3,
+				resize: true,
+				colors: hoverBackgroundColor3
+			});
+
+			$('.peity-donut').each(function () {
+				$(this).peity("donut", $(this).data());
+			});
+
+			Morris.Donut({
+				element: 'pie_people',
+				data: data4,
+				resize: true,
+				colors: ['#f0f1f4', '#f16c69', '#28bbe3']
+			});
+
+			$('.peity-donut').each(function () {
+				$(this).peity("donut", $(this).data());
+			});
+
+			Morris.Donut({
+				element: 'pie_house',
+				data: data5,
+				resize: true,
+				colors: ['#f0f1f4', '#f16c69', '#28bbe3']
+			});
+
+			$('.peity-donut').each(function () {
+				$(this).peity("donut", $(this).data());
+			});
+
+			Morris.Donut({
+				element: 'pie_property',
+				data: data6,
+				resize: true,
+				colors:['#f0f1f4', '#f16c69', '#28bbe3']
+			});
+
+			$('.peity-donut').each(function () {
+				$(this).peity("donut", $(this).data());
+			});
+
+			Morris.Donut({
+				element: 'pie_transport',
+				data: data7,
+				resize: true,
+				colors:['#f0f1f4', '#f16c69', '#28bbe3']
+			});
+
+			$('.peity-donut').each(function () {
+				$(this).peity("donut", $(this).data());
+			});
+
+			Morris.Donut({
+				element: 'pie_ar',
+				data: data8,
+				resize: true,
+				colors:['#f0f1f4', '#f16c69', '#28bbe3']
+			});
+
+			$('.peity-donut').each(function () {
+				$(this).peity("donut", $(this).data());
+			});
+		</script>
+
+    </body>
+
+</html>

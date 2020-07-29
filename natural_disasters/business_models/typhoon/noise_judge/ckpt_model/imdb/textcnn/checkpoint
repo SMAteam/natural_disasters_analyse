@@ -1,0 +1,4 @@
+model_checkpoint_path: "/home/web/qiuyi/SMASAC/.spyproject/text_classifier_typhoon/ckpt_model/imdb/textcnn/textcnn-300"
+all_model_checkpoint_paths: "/home/web/qiuyi/SMASAC/.spyproject/text_classifier_typhoon/ckpt_model/imdb/textcnn/textcnn-100"
+all_model_checkpoint_paths: "/home/web/qiuyi/SMASAC/.spyproject/text_classifier_typhoon/ckpt_model/imdb/textcnn/textcnn-200"
+all_model_checkpoint_paths: "/home/web/qiuyi/SMASAC/.spyproject/text_classifier_typhoon/ckpt_model/imdb/textcnn/textcnn-300"
