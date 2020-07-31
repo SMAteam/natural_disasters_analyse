@@ -19,8 +19,10 @@
 			#allmap{width:100%;height:100%;position:absolute;right:0px;}
 			#weibo{width:30%;height:50%;position:absolute;right:10px;top:100px;overflow-y:auto; overflow-x:auto;}
 		</style>
-
-		<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=VVcI1ugiEkoIfEhK0RD9h8GADwGoCEb1"></script>
+    <!-- 引入 ECharts 文件 -->
+    <script src="../static/js/echarts.js"></script>
+    <script src="../static/js/china.js"></script>
+    <script src="../static/js/jquery-3.2.1.js"></script>
     </head>
 
     <body>
@@ -142,323 +144,200 @@
                 </div>
                 <!-- Sidebar -left -->
             </div>
-            <!-- Left Sidebar End -->
-
-            <!-- ============================================================== -->
-            <!-- Start right Content here -->
-            <!-- ============================================================== -->
             <div class="content-page">
-				<div id="allmap"></div>				
+				<div id="allmap"></div>
 				<div id="weibo"></div>
-{#				<?php#}
-{#					ini_set("memory_limit","-1");#}
-{#					class MyDB extends SQLite3{#}
-{#						function __construct(){#}
-{#							$this->open('/home/web/qiuyi/SMASAC/.spyproject/data.db');#}
-{#						}#}
-{#					}#}
-{#					$db = new MyDB();#}
-{##}
-{#					$sql ="SELECT weibo_id,substr(time,0,11) as time, category, location, event from earthquake_info where time between '2020-05-01 00:00' and '2020-05-20 00:00' group by location,substr(time,0,11)";#}
-{##}
-{#					$ret = $db->query($sql);#}
-{##}
-{#					$location=array();#}
-{#					$time=array();#}
-{#					$event=array();#}
-{##}
-{#					$weibo=array();#}
-{##}
-{#					$lng=array();#}
-{#					$lat=array();#}
-{##}
-{#					$num_rows=0;#}
-{#					if(!$ret){#}
-{#						echo $db->lastErrorMsg();#}
-{#					}#}
-{#					else{#}
-{#						while($row = $ret->fetchArray(SQLITE3_ASSOC) ){#}
-{#							$num_rows=$num_rows+1;#}
-{#							$location[]=$row['location'];#}
-{#							$time[]=$row['time'];#}
-{#							$event[]=$row['event'];#}
-{##}
-{#							$sql="select * from coordinate where shortname='".strval($row['location'])."'";#}
-{#							$ret2=$db->query($sql);#}
-{#							$row2 = $ret2->fetchArray(SQLITE3_ASSOC);#}
-{#							$lng[]=$row2['lng'];#}
-{#							$lat[]=$row2['lat'];#}
-{##}
-{#							$sql ="SELECT * from earthquake_info where location='".strval($row['location'])."'and time between '2020-05-01 00:00' and '2020-05-20 00:00';";#}
-{##}
-{#							$ret3=$db->query($sql);#}
-{#							$original_text=array();#}
-{#							while($row3 = $ret3->fetchArray(SQLITE3_ASSOC)){#}
-{#								$sql ="SELECT * from earthquake_originaltext where weibo_id='".strval($row3['weibo_id'])."'";#}
-{#								$ret4=$db->query($sql);#}
-{#								while($row4 = $ret4->fetchArray(SQLITE3_ASSOC)){#}
-{#								$text=array('weibo_id'=>$row4['weibo_id'],'user_id'=>$row4['user_id'],'time'=>$row4['time'],'text'=>$row4['original_text']);#}
-{#								$original_text[]=$text;#}
-{#								}#}
-{#							}#}
-{#							$weibo[]=$original_text;#}
-{#						}#}
-{#					}#}
-{##}
-{#					$db->close();#}
-{#					if($num_rows==0){#}
-{#						echo '<script language="javascript">alert("There is no data during this period");history.back(-1);</script>';#}
-{#					}#}
-{##}
-{#					$locationjson=json_encode($location);#}
-{#					$timejson=json_encode($time);#}
-{#					$eventjson=json_encode($event);#}
-{##}
-{#					$lngjson=json_encode($lng);#}
-{#					$latjson=json_encode($lat);#}
-{##}
-{#					$weibojson=json_encode($weibo);#}
-{##}
-{#					echo "<script type=\"text/javascript\">#}
-{#						var loc=$locationjson;#}
-{#						var tim=$timejson;#}
-{#						var ev=$eventjson;#}
-{##}
-{#						var lng=$lngjson;#}
-{#						var lat=$latjson;#}
-{##}
-{#						var weibo_text=$weibojson;#}
-{#					</script>#}
-{#					";#}
-{#				?>#}
             </div>
-
-
-            <!-- ============================================================== -->
-            <!-- End Right content here -->
-            <!-- ============================================================== -->
-
-
         </div>
-        <!-- END wrapper -->
-
 
 
 		<script language='javascript'>
-			
-			var _page_index = 0;
-			var PAGE_SIZE = 4;
-			var _page_count = 0;
-			var _start_index = 0;
-			var _end_index = 4;
-			var rows=0;
+			// 基于准备好的dom，初始化echarts实例
+            var mapBoxEchart = echarts.init(document.getElementById('allmap'));
+            // 指定相关的配置项和数据
+            var mapBoxOption = {
+                series: [{
+                    type: 'map',
+                    mapType: 'china',
+                    label: {
+                        normal: {
+                            show: true, //显示省份标签
+                            textStyle: {
+                                color: "blue"
+                            } //省份标签字体颜色
+                        },
+                        emphasis: { //对应的鼠标悬浮效果
+                            show: true,
+                            textStyle: {
+                                color: "#800080"
+                            }
+                        }
+                    },
+                    aspectScale: 0.75,//这个参数用于 scale 地图的长宽比。最终的 aspect 的计算方式是：geoBoundingRect.width / geoBoundingRect.height * aspectScale
+                    zoom: 1.0,//当前视角的缩放比例。
+                    itemStyle: {
+                        normal: {
+                            borderWidth: .5, //区域边框宽度
+                            borderColor: '#009fe8', //区域边框颜色
+                            areaColor: "#ffefd5", //区域颜色
+                        },
+                        emphasis: {//鼠标滑过地图高亮的相关设置
+                            borderWidth: .5,
+                            borderColor: '#4b0082',
+                            areaColor: "#ffdead",
+                        }
+                    },
+                    data: [
+                        {
+                        name: '北京',
+                        value: 0
+                        }, {
+                        name: '天津',
+                        value: 0
+                        }, {
+                        name: '上海',
+                        value: 0
+                        }, {
+                        name: '重庆',
+                        value: 0
+                        }, {
+                        name: '河北',
+                        value: 0
+                        }, {
+                        name: '河南',
+                        value: 0
+                        }, {
+                        name: '云南',
+                        value: 0
+                        }, {
+                        name: '辽宁',
+                        value: 0
+                        }, {
+                        name: '黑龙江',
+                        value: 0
+                        }, {
+                        name: '湖南',
+                        value: 0
+                        }, {
+                        name: '安徽',
+                        value: 0
+                        }, {
+                        name: '山东',
+                        value: 0
+                        }, {
+                        name: '新疆',
+                        value: 0
+                        }, {
+                        name: '江苏',
+                        value: 0
+                        }, {
+                        name: '浙江',
+                        value: 0
+                        }, {
+                        name: '江西',
+                        value: 0
+                        }, {
+                        name: '湖北',
+                        value: 0
+                        }, {
+                        name: '广西',
+                        value: 0
+                        }, {
+                        name: '甘肃',
+                        value: 0
+                        }, {
+                        name: '山西',
+                        value: 0
+                        }, {
+                        name: '内蒙古',
+                        value: 0
+                        }, {
+                        name: '陕西',
+                        value: 0
+                        }, {
+                        name: '吉林',
+                        value: 0
+                        }, {
+                        name: '福建',
+                        value: 0
+                        }, {
+                        name: '贵州',
+                        value: 0
+                        }, {
+                        name: '广东',
+                        value: 0
+                        }, {
+                        name: '青海',
+                        value: 0
+                        }, {
+                        name: '西藏',
+                        value: 0
+                        }, {
+                        name: '四川',
+                        value: 0
+                        }, {
+                        name: '宁夏',
+                        value: 0
+                        }, {
+                        name: '海南',
+                        value: 0
+                        }, {
+                        name: '台湾',
+                        value: 0
+                        }, {
+                        name: '香港',
+                        value: 0
+                        }, {
+                        name: '澳门',
+                        value: 0}
+                    ]
+                }]
+            };
+            // 使用制定的配置项和数据显示图表
+            mapBoxEchart.setOption(mapBoxOption);
+            // echart图表自适应
+            window.addEventListener("resize", function() {
+                mapBoxEchart.resize();
+            });
+            mapBoxEchart.on('click', function (params) {
+                var city = params.name;
+                $.ajax({
+                    url:"{% url 'natural_disasters:map_1_collect'%}",
+                    type:"post",
+                    // 3.发送的数据到底是什么
+                    data:{"province":city},
+                    // 4.异步提交的任务需要通过回调函数来处理
+                    success:function(data){
+                        res = JSON.parse(data);
+                        var weibo = document.getElementById("weibo");
+                        weibo.style.background="#FFFFFF";
+                        weibo.innerHTML='<div class="card"><ul class="message-list">';
+                        for(var i=0;i<res.length;i++){
+                            var post_id = String(res[i].post_id);
+                            var province = String(res[i].province);
+                            if(province=="null"){
+                                province = "";
+                            }
+                            var city = String(res[i].city);
+                            if(city=="null"){
+                                city = "";
+                            }
+                            var area = String(res[i].area);
+                            if(area=="null"){
+                                area = "";
+                            }
+                            var time = String(res[i].time);
+                            var event = String(res[i].event);
+                            weibo.innerHTML=weibo.innerHTML+"<li id='"+String(i)+"'><div class='col-mail col-mail-1'><div class='date'>时间："+String(time)+"</div><div class='date'>地点："+String(province)+String(city)+String(area)+"</div><a href='detail?id="+String(post_id)+"' class='title'>灾害事件:"+String(event)+'</a></div><div class="col-mail col-mail-2"></div></li>';
+							weibo.innerHTML=weibo.innerHTML+"<div style='min-height:20px;'></div>";
+                        }
+                        t.innerHTML=t.innerHTML+'</ul></div></div></div>';
+                    }
+                })
+            });
 
-			var status=0; //0:原文，1:筛选后，2:地理位置
-			
-			function create_table(startIndex, endIndex)
-			{
-				var str = "";
-				for(var i = startIndex; i <= endIndex; ++i){
-					str="<div class='col-mail col-mail-1'><a href='detail?id="+String(weibo_text[rows][i]['weibo_id'])+"' class='title'>weibo id:"+String(weibo_text[rows][i]['weibo_id'])+'&nbsp;&nbsp;time:'+String(weibo_text[rows][i]['time'])+'</a></div><div class="col-mail col-mail-2"><div class="date">'+weibo_text[rows][i]['text']+'</div></div>';
-					console.log(str);
-					var complete=document.getElementById(String(i%4));
-					complete.innerHTML = str;
-				}
-				for (var k= startIndex;k <= endIndex;k++){
-					var aa=document.getElementById(String(k%4)).innerHTML;
-					var reg = new RegExp(String(loc[rows]), 'g');
-					aa = aa.replace(reg, '<font color="#FF6633">'+loc[rows]+'</font>');
-					var bb=document.getElementById(String(k%4));
-					bb.innerHTML=aa;
-				}
-				if( endIndex%4 !=0){
-					for(var i=endIndex%4;i<=4;i++){
-						var str="";
-						var complete=document.getElementById(String(i));
-						complete.innerHTML = str;
-					}
-				}
-			}
-			
-			function count_page_count(rows_count, page_size)
-			{
-				var page_count = 0;
-				if(rows_count % page_size == 0)
-				{
-					page_count = rows_count / page_size;
-				}
-				else
-				{
-					page_count = parseInt(rows_count / page_size) + 1;
-				}
-				return page_count;
-			}
-			
-			function show_page_complete()
-			{
-				var spnRowsCount = document.getElementById("spnRowsCount");
-				var spnPageCount = document.getElementById("spnPageCount");
-				var spnPageIndex = document.getElementById("spnPageIndex");
-				var spnPageSize = document.getElementById("spnPageSize");
-				
-				_page_count = count_page_count(_rows_count, PAGE_SIZE);
-				
-				spnRowsCount.innerText = _rows_count;
-				spnPageCount.innerText = _page_count;
-				spnPageIndex.innerText = _page_index + 1;
-				spnPageSize.innerText = PAGE_SIZE;
-			}
-			
-			function get_index(page_index, page_size, rows_count)
-			{
-				var start_index = 0;
-				var end_index = 0;
-				
-				start_index = page_index * page_size;
-				end_index = (page_index + 1) * page_size - 1;
-				console.log(rows_count);
-				if(end_index >= rows_count)
-				{
-					end_index = rows_count - 1;
-				}
-				
-				return {"start_index" : start_index, "end_index" : end_index};
-			}
-			
-			function onFirst()
-			{
-				if(_page_index == 0)
-				{
-					alert("已经是第一页");
-					return;
-				}
-				
-				_page_index = 0;
-				index = get_index(_page_index, PAGE_SIZE, _rows_count);
-				show_page_complete();
-				create_table(index.start_index, index.end_index);
-			}
-			
-			function onPre()
-			{			
-				if(_page_index == 0)
-				{
-					alert("已经是第一页");
-					return;
-				}
-				_page_index = _page_index - 1;
-				
-				index = get_index(_page_index, PAGE_SIZE, _rows_count);
-				//show_page_complete();
-				create_table(index.start_index, index.end_index);
-			}
-			
-			function onNext()
-			{
-				if(_page_index == _page_count - 1)
-				{
-					alert("已经是最后一页");
-					return;
-				}
-				_page_index = _page_index + 1;
-				
-				index = get_index(_page_index, PAGE_SIZE, _rows_count);
-				//show_page_complete();
-				create_table(index.start_index, index.end_index);
-			}
-			
-			function onLast()
-			{
-				if(_page_index == _page_count - 1)
-				{
-					alert("已经是最后一页");
-					return;
-				}
-				
-				_page_index = _page_count - 1;
-				
-				index = get_index(_page_index, PAGE_SIZE, _rows_count);
-				show_page_complete();
-				create_table(index.start_index, index.end_index);
-			}
 
-
-
-
-
-			var map = new BMap.Map("allmap"); // 创建Map实例
-			var t = document.getElementById("weibo");
-			//t.value="Welcome to use the map labeling service"+"\n"+"The crises have been marked on the map. You could click the marker for details, and the original texts of the related microblogs would be displayed here.";
-			map.centerAndZoom("西安", 5);  // 初始化地图,用城市名设置地图中心点
-			map.addControl(new BMap.MapTypeControl()); //添加地图类型控件
-			map.setCurrentCity("深圳");   // 设置地图显示的城市 此项是必须设置的
-			map.enableScrollWheelZoom(true);  //开启鼠标滚轮缩放
-			var point = new BMap.Point(116.404, 39.915);
-			//var marker = new BMap.Marker(point); // 创建点
-			var marker=new Array();
-			map.addOverlay(marker); //添加点
-			map.removeOverlay(marker); //删除点
-			var myGeo = new BMap.Geocoder();
-
-			for (i = 0; i < loc.length; i++) {
-				(function(index){
-					var address = new BMap.Point(lng[index], lat[index]);
-					marker[index] = new BMap.Marker(address);	
-					var opts = {
-						width: 100,  // 信息窗口宽度
-						height: 110,  // 信息窗口高度
-						title: "灾难信息" // 信息窗口标题
-					}
-					marker[index].addEventListener("click", function (e) {
-						content="地点："+loc[index]+"<br/>时间："+tim[index]+"<br/>详情："+ev[index]+"\n";
-						var infoWindow = new BMap.InfoWindow(content, opts); // 创建信息窗口对象
-						this.openInfoWindow(infoWindow,address); //开启信息窗口
-
-						_page_index = 0;
-						PAGE_SIZE = 4;
-						_rows_count = weibo_text[index].length;
-						_page_count = 0;
-						_start_index = 0;
-						_end_index = 4;
-						rows=index;
-
-						t.style.background="#FFFFFF";
-						t.innerHTML="";
-						t.innerHTML=' <div class="email-rightbar mb-3"><div class="card"><ul class="message-list">';
-						for (var k=0;k<4 && k<weibo_text[index].length;k++){
-							//t.innerHTML=t.innerHTML+"<li id='"+String(k)+"'><div class='col-mail col-mail-1'><a class='title' href='#'>weibo id:"+String(weibo_text[index][k]['weibo_id'])+'</a><div class="date">'+String(weibo_text[index][k]['time'])+'</div></div><div class="col-mail col-mail-2"><a class="subject" href="#">'+weibo_text[index][k]['text']+'</a></div></li>';
-							t.innerHTML=t.innerHTML+"<li id='"+String(k)+"'><div class='col-mail col-mail-1'><a href='detail?id="+String(weibo_text[index][k]['weibo_id'])+"' class='title'>weibo id:"+String(weibo_text[index][k]['weibo_id'])+"&nbsp;&nbsp;time:"+String(weibo_text[index][k]['time'])+'</a></div><div class="col-mail col-mail-2"><div class="date">'+weibo_text[index][k]['text']+'</div></div></li>';
-							t.innerHTML=t.innerHTML+"<div style='min-height:20px;'></div>";
-
-						}
-						t.innerHTML=t.innerHTML+'</ul></div></div><div class="row m-t-20"><div class="col-5"><div class="btn-group float-right"><button type="button" class="btn btn-sm btn-success waves-effect" onclick="onPre()"><i class="fa fa-chevron-left"></i></button><button type="button" class="btn btn-sm btn-success waves-effect" onclick="onNext()"><i class="fa fa-chevron-right"></i></button></div></div></div>';
-						
-						for (var k=0;k<4 && k<weibo_text[index].length;k++){
-							var aa=document.getElementById(String(k)).innerHTML;
-							var reg = new RegExp(String(loc[index]), 'g');
-							aa = aa.replace(reg, '<font color="#FF6633">'+loc[index]+'</font>');
-							var bb=document.getElementById(String(k));
-							bb.innerHTML=aa;
-						}
-
-					});
-					map.addOverlay(marker[index]);
-				})(i);
-			}
-			
-			getBoundary("中国");
-			function getBoundary(sRegion) {
-				var bdary = new BMap.Boundary();
-				bdary.get(sRegion, function (rs) { //获取行政区域
-					var count = rs.boundaries.length; //行政区域的点有多少个
-					for (var i = 0; i < count; i++) {
-						var ply = new BMap.Polygon(rs.boundaries[i], { strokeWeight: 2, strokeColor: "#4A7300", fillColor: "#FFF8DC" }); //建立多边形覆盖物
-						map.addOverlay(ply); //添加覆盖物
-					}
-				});
-			}
 		</script>
-				
 
         <!-- jQuery  -->
         <script src="../static/assets/js/jquery.min.js"></script>

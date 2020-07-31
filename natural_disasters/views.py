@@ -1,6 +1,11 @@
 import os
+
+from django.core import serializers
 from django.db.models import Count
 from django.db.models.functions import ExtractYear, ExtractMonth
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
 earthquake_id = ['\'1_1\'']
 typhoon_id = ['\'1_2\'']
 rainstorm_id = ['\'1_3\'']
@@ -9,9 +14,8 @@ from .models import weibo_post,noise_judge,category,event
 import json
 import random
 from django.db import connection
-from django.core.paginator import Paginator
-cursor = connection.cursor()
 def home(request):
+    cursor = connection.cursor()
     # 统计每个月灾害文章数量
     sql1 = f"select DATE_FORMAT(post_time,'%Y-%m'),count(*) from weibo_post,noise_judge where noise='0' and (noise_judge.task_id={'or noise_judge.task_id='.join(earthquake_id)}) and weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id group by DATE_FORMAT(post_time,'%Y-%m');"
     sql2 = f"select DATE_FORMAT(post_time,'%Y-%m'),count(*) from weibo_post,noise_judge where noise='0' and (noise_judge.task_id={'or noise_judge.task_id='.join(typhoon_id)}) and weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id group by DATE_FORMAT(post_time,'%Y-%m');"
@@ -80,6 +84,7 @@ def home(request):
     }
     return render(request, 'home.html',context)
 def history(request):
+    cursor = connection.cursor()
     type = request.GET['type']
     relevant = request.GET['relevant']
     if type == '0' and relevant == '0':
@@ -131,6 +136,7 @@ def history(request):
     }
     return render(request, 'history.html',context)
 def detail(request):
+    cursor = connection.cursor()
     id = request.GET['id']
     row = weibo_post.objects.filter(post_id=id).first()
     context = {
@@ -141,6 +147,7 @@ def detail(request):
     }
     return render(request, 'detail.html', context)
 def statistical(request):
+    cursor = connection.cursor()
     #地震
     sql = f"select count(*) from event where (task_id={'or task_id='.join(earthquake_id)});"
     cursor.execute(sql)
@@ -526,20 +533,98 @@ def statistical(request):
     }
     return  render(request,'statistical.html',context)
 def map_(request):
-
     context = {
 
     }
     return render(request, 'map_.html', context)
 def map_2(request):
-
+    print(2)
     context = {
 
     }
     return render(request, 'map_2.html', context)
 def map_3(request):
-
+    print(3)
     context = {
 
     }
     return render(request, 'map_3.html', context)
+#地震
+@csrf_exempt
+def map_1_collect(request):
+    province = str(request.POST["province"])
+    cursor = connection.cursor()
+    sql = f"select post_id,province,city,area,`time`,`event` from `event` where (task_id={'or task_id='.join(earthquake_id)}) and province like '%{province}%';"
+    cursor.execute(sql);
+    ret = cursor.fetchall()
+    cnt = 0
+    context = []
+    for i in ret:
+        tmp = {
+            "post_id": i[0],
+            "province": i[1],
+            "city": i[2],
+            "area": i[3],
+            "time": str(i[4]),
+            "event": i[5]
+        }
+        context.append(tmp)
+        cnt += 1
+        if cnt == 10:
+            break
+
+    context = json.dumps(context, ensure_ascii=False)
+    return HttpResponse(context)
+#台风
+@csrf_exempt
+def map_2_collect(request):
+    province = str(request.POST["province"])
+    cursor = connection.cursor()
+    sql = f"select post_id,province,city,area,`time`,`event` from `event` where (task_id={'or task_id='.join(typhoon_id)}) and province like '%{province}%';"
+    cursor.execute(sql);
+    ret = cursor.fetchall()
+    cnt = 0
+    context = []
+    for i in ret:
+        tmp = {
+            "post_id": i[0],
+            "province": i[1],
+            "city": i[2],
+            "area": i[3],
+            "time": str(i[4]),
+            "event": i[5]
+        }
+        context.append(tmp)
+        cnt += 1
+        if cnt == 10:
+            break
+
+    context = json.dumps(context, ensure_ascii=False)
+    return HttpResponse(context)
+#暴雨
+@csrf_exempt
+def map_3_collect(request):
+    print(3)
+    province = str(request.POST["province"])
+    cursor = connection.cursor()
+    sql = f"select post_id,province,city,area,`time`,`event` from `event` where (task_id={'or task_id='.join(rainstorm_id)}) and province like '%{province}%';"
+    cursor.execute(sql);
+    ret = cursor.fetchall()
+    cnt = 0
+    context = []
+    for i in ret:
+        tmp = {
+            "post_id": i[0],
+            "province": i[1],
+            "city": i[2],
+            "area": i[3],
+            "time": str(i[4]),
+            "event": i[5]
+        }
+        context.append(tmp)
+        cnt += 1
+        if cnt == 10:
+            break
+
+    context = json.dumps(context, ensure_ascii=False)
+    return HttpResponse(context)
