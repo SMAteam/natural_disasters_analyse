@@ -1,10 +1,8 @@
 import os
-
-from django.core import serializers
-from django.db.models import Count
-from django.db.models.functions import ExtractYear, ExtractMonth
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from .tasks import earthquake_noise, typhoon_noise, rainstorm_noise, earthquake_event, typhoon_event, rainstorm_event, \
+    earthquake_category, rainstorm_category, typhoon_category
 
 earthquake_id = ['\'1_1\'']
 typhoon_id = ['\'1_2\'']
@@ -15,6 +13,18 @@ import json
 import random
 from django.db import connection
 def home(request):
+    # earthquake_noise()
+    # typhoon_noise()
+    # rainstorm_noise()
+    #
+    # earthquake_category()
+    # typhoon_category()
+    # rainstorm_category()
+    #
+    # earthquake_event()
+    # typhoon_event()
+    # rainstorm_event()
+
     cursor = connection.cursor()
     # 统计每个月灾害文章数量
     sql1 = f"select DATE_FORMAT(post_time,'%Y-%m'),count(*) from weibo_post,noise_judge where noise='0' and (noise_judge.task_id={'or noise_judge.task_id='.join(earthquake_id)}) and weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id group by DATE_FORMAT(post_time,'%Y-%m');"
@@ -38,12 +48,10 @@ def home(request):
             data[str(row[0])] = [0,int(row[1]),0]
         else:
             data[str(row[0])][1] = int(row[1])
-    print(data)
     for row in ret3:
         if str(row[0]) not in data:
             data[str(row[0])] = [0,0,int(row[1])]
         else:
-            print(data[str(row[0])])
             data[str(row[0])][2] = int(row[1])
     data1 = []
     for k,v in data.items():
@@ -82,6 +90,7 @@ def home(request):
 			'datajson':json.dumps(data1),
             'datajson2':json.dumps(data2),
     }
+    cursor.close()
     return render(request, 'home.html',context)
 def history(request):
     cursor = connection.cursor()
@@ -343,7 +352,6 @@ def statistical(request):
             'label': "地震",
             'value': int(row[1]),
         })
-        print(int(row[1]))
     sql = f"SELECT task_id,count(*) as count from category where category='people' and (task_id={'or task_id='.join(typhoon_id)});"
     cursor.execute(sql)
     ret3 = cursor.fetchall()
@@ -354,7 +362,6 @@ def statistical(request):
             'label': "台风",
             'value': int(row[1]),
         })
-        print(int(row[1]))
     sql = f"SELECT task_id,count(*) as count from category where category='people' and (task_id={'or task_id='.join(rainstorm_id)});"
     cursor.execute(sql)
     ret3 = cursor.fetchall()
@@ -365,8 +372,6 @@ def statistical(request):
             'label': "暴雨",
             'value': int(row[1]),
         })
-        print(int(row[1]))
-
         # 房屋损失
         hoverBackgroundColor5 = []
         data5 = []
@@ -538,13 +543,11 @@ def map_(request):
     }
     return render(request, 'map_.html', context)
 def map_2(request):
-    print(2)
     context = {
 
     }
     return render(request, 'map_2.html', context)
 def map_3(request):
-    print(3)
     context = {
 
     }
@@ -604,7 +607,6 @@ def map_2_collect(request):
 #暴雨
 @csrf_exempt
 def map_3_collect(request):
-    print(3)
     province = str(request.POST["province"])
     cursor = connection.cursor()
     sql = f"select post_id,province,city,area,`time`,`event` from `event` where (task_id={'or task_id='.join(rainstorm_id)}) and province like '%{province}%';"

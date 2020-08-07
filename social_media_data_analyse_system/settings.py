@@ -136,42 +136,59 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'collect_static')
 from celery.schedules import crontab,timedelta
 import djcelery
 djcelery.setup_loader()
-BROKER_URL = 'redis://127.0.0.1:6379/0'
-CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/1'
+BROKER_URL = 'redis://127.0.0.1:6379/10'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/11'
 CELERY_IMPORTS = ('natural_disasters.tasks')
 CELERY_TIMEZONE = TIME_ZONE
 #CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 from celery.schedules import crontab
 CELERYBEAT_SCHEDULE = {
-    # u'地震': {
-    #     "task": "natural_disasters.tasks.earthquake_noise",
-    #     "schedule": crontab(hour=5,minute=20),
-    #     "args": (),
-    # },
-    # u'台风': {
-    #     "task": "natural_disasters.tasks.typhoon_noise",
-    #     "schedule": crontab(minute=20),
-    #     "args": (),
-    # },
-    # u'暴雨': {
-    #     "task": "natural_disasters.tasks.rainstorm_noise",
-    #     "schedule": crontab(hour=5,minute=20),
-    #     "args": (),
-    # },
-    u'地震': {
+    u'地震垃圾处理': {
         "task": "natural_disasters.tasks.earthquake_noise",
-        "schedule": crontab(minute="*/1"),
+        "schedule": crontab(hour="3",minute="0"),
         "args": (),
     },
-    u'台风': {
+    u'台风垃圾处理': {
         "task": "natural_disasters.tasks.typhoon_noise",
-        "schedule": crontab(minute="*/1"),
+        "schedule": crontab(hour="3",minute="0"),
         "args": (),
     },
-    u'暴雨': {
+    u'暴雨垃圾处理': {
         "task": "natural_disasters.tasks.rainstorm_noise",
-        "schedule": crontab(minute="*/1"),
+        "schedule": crontab(hour="3",minute="0"),
+        "args": (),
+    },
+
+    u'地震灾害损失分类': {
+        "task": "natural_disasters.tasks.earthquake_category",
+        "schedule": crontab(hour="3",minute="30"),
+        "args": (),
+    },
+    u'台风灾害损失分类': {
+        "task": "natural_disasters.tasks.typhoon_category",
+        "schedule": crontab(hour="3",minute="30"),
+        "args": (),
+    },
+    u'暴雨灾害损失分类': {
+        "task": "natural_disasters.tasks.rainstorm_category",
+        "schedule": crontab(hour="3",minute="30"),
+        "args": (),
+    },
+
+    u'地震灾害信息提取': {
+        "task": "natural_disasters.tasks.earthquake_event",
+        "schedule": crontab(hour="3",minute="30"),
+        "args": (),
+    },
+    u'台风灾害信息提取': {
+        "task": "natural_disasters.tasks.typhoon_event",
+        "schedule": crontab(hour="3",minute="30"),
+        "args": (),
+    },
+    u'暴雨灾害信息提取': {
+        "task": "natural_disasters.tasks.rainstorm_event",
+        "schedule": crontab(hour="3",minute="30"),
         "args": (),
     },
 }
