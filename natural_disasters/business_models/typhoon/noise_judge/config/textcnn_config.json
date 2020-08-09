@@ -18,9 +18,9 @@
   "train_data": "data/imdb/train_data.txt",
   "eval_data": "data/imdb/eval_data.txt",
   "stop_word": "data/english",
-  "output_path": "outputs\\imdb\\textcnn",
+  "output_path": "outputs/imdb/textcnn",
   "word_vectors_path": null,
-  "ckpt_model_path": "ckpt_model\\imdb\\textcnn",
-  "pb_model_path": "pb_model\\imdb\\textcnn"
+  "ckpt_model_path": "ckpt_model/imdb/textcnn",
+  "pb_model_path": "pb_model/imdb/textcnn"
 }
 

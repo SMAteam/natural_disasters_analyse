@@ -185,7 +185,7 @@
                                             </div>
                                             <ul class="message-list">
                                                 {% for row in page_one %}
-                                                    {% if row.isnoise == '1' %}
+                                                    {% if row.isnoise == '0' %}
                                                         <li id='{{ row.num_rows }}'><div class='col-mail col-mail-1'><a href='detail?id={{ row.weibo_id }}' class='title'>weibo id:{{ row.weibo_id }}</a></div><div class="col-mail col-mail-2"><a href="detail?id={{ row.weibo_id }}" class="subject"><span class="mdi mdi-arrow-right-drop-circle text-info float-right">相关</span>{{ row.original_text }}</a><div class="date">{{ row.time }}</div></div></li>
                                                     {% else %}
                                                         <li id='{{ row.num_rows }}'><div class='col-mail col-mail-1'><a href='detail?id={{ row.weibo_id }}' class='title'>weibo id:{{ row.weibo_id }}</a></div><div class="col-mail col-mail-2"><a href="detail?id={{ row.weibo_id }}" class="subject"><span class="mdi mdi-arrow-right-drop-circle text-warning float-right">不相关</span>{{ row.original_text }}</a><div class="date">{{ row.time }}</div></div></li>
@@ -255,7 +255,7 @@
 				var str = "";
 				for(var i = startIndex; i <= endIndex; ++i)
 				{
-					if(isnoise[i]=='1'){
+					if(isnoise[i]=='0'){
 						str="<div class='col-mail col-mail-1'><a href='detail?id="+String(weiboid[i])+"' class='title'>weibo id:"+String(weiboid[i])+'</a></div> <div class="col-mail col-mail-2"><a href="detail?id='+String(weiboid[i])+'" class="subject"><span class="mdi mdi-arrow-right-drop-circle text-info float-right">相关</span>'+String(text[i].substr(1))+'</a><div class="date">'+String(time[i].substr(0,10))+"</div></div>";
 					}
 					else{

@@ -191,4 +191,20 @@ CELERYBEAT_SCHEDULE = {
         "schedule": crontab(hour="3",minute="30"),
         "args": (),
     },
+
+    u'地震事件分类': {
+        "task": "natural_disasters.tasks.earthquake_cluster",
+        "schedule": crontab(hour="4",minute="0"),
+        "args": (),
+    },
+    u'台风事件分类': {
+        "task": "natural_disasters.tasks.typhoon_cluster",
+        "schedule": crontab(hour="4",minute="0"),
+        "args": (),
+    },
+    u'暴雨事件分类': {
+        "task": "natural_disasters.tasks.rainstorm_cluster",
+        "schedule": crontab(hour="4",minute="0"),
+        "args": (),
+    },
 }

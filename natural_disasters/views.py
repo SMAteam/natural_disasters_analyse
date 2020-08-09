@@ -2,17 +2,21 @@ import os
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from .tasks import earthquake_noise, typhoon_noise, rainstorm_noise, earthquake_event, typhoon_event, rainstorm_event, \
-    earthquake_category, rainstorm_category, typhoon_category
+    earthquake_category, rainstorm_category, typhoon_category, earthquake_cluster, typhoon_cluster, rainstorm_cluster
 
 earthquake_id = ['\'1_1\'']
-typhoon_id = ['\'1_2\'']
-rainstorm_id = ['\'1_3\'']
+rainstorm_id = ['\'1_2\'']
+typhoon_id = ['\'1_3\'']
+
 from django.shortcuts import render
 from .models import weibo_post,noise_judge,category,event
 import json
 import random
 from django.db import connection
+import collections
 def home(request):
+
+
     # earthquake_noise()
     # typhoon_noise()
     # rainstorm_noise()
@@ -24,6 +28,10 @@ def home(request):
     # earthquake_event()
     # typhoon_event()
     # rainstorm_event()
+    #
+    # earthquake_cluster()
+    # typhoon_cluster()
+    # rainstorm_cluster()
 
     cursor = connection.cursor()
     # 统计每个月灾害文章数量
@@ -106,13 +114,13 @@ def history(request):
         sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(rainstorm_id)}) order by post_time DESC limit 1000;"
 
     elif type == '0' and relevant == '1':
-        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and noise='1' order by post_time DESC limit 1000;"
+        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and noise='0' order by post_time DESC limit 1000;"
     elif type == '1' and relevant == '1':
-        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(earthquake_id)}) and noise='1' order by post_time DESC limit 1000;"
+        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(earthquake_id)}) and noise='0' order by post_time DESC limit 1000;"
     elif type == '2' and relevant == '1':
-        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(typhoon_id)}) and noise='1' order by post_time DESC limit 1000;"
+        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(typhoon_id)}) and noise='0' order by post_time DESC limit 1000;"
     elif type == '3' and relevant == '1':
-        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(rainstorm_id)}) and noise='1' order by post_time DESC limit 1000;"
+        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(rainstorm_id)}) and noise='0' order by post_time DESC limit 1000;"
     cursor.execute(sql)
     ret = cursor.fetchall()
     isnoise = []
@@ -557,25 +565,57 @@ def map_3(request):
 def map_1_collect(request):
     province = str(request.POST["province"])
     cursor = connection.cursor()
-    sql = f"select post_id,province,city,area,`time`,`event` from `event` where (task_id={'or task_id='.join(earthquake_id)}) and province like '%{province}%';"
+    sql = f"select distinct cluster from `event` where (task_id={'or task_id='.join(earthquake_id)}) and province like '%{province}%' order by cluster;"
     cursor.execute(sql);
-    ret = cursor.fetchall()
-    cnt = 0
+    res = cursor.fetchall()
     context = []
-    for i in ret:
-        tmp = {
-            "post_id": i[0],
-            "province": i[1],
-            "city": i[2],
-            "area": i[3],
-            "time": str(i[4]),
-            "event": i[5]
-        }
-        context.append(tmp)
-        cnt += 1
-        if cnt == 10:
-            break
-
+    for cluster in res:
+        provinces = []
+        citys = []
+        areas = []
+        events = []
+        event_time = ""
+        cluster = str(cluster[0])
+        sql = f"select post_id,province,city,area,`time`,`event` from `event` where (task_id={'or task_id='.join(earthquake_id)}) and province like '%{province}%' and cluster = '{cluster}';"
+        cursor.execute(sql);
+        ret = cursor.fetchall()
+        for i in (ret):
+            if event_time == "":
+                event_time = str(i[4])
+            provinces.append(i[1])
+            citys.append(i[2])
+            areas.append(i[3])
+            events.append(i[5])
+        province_ = ""
+        for k,v in collections.Counter(provinces).most_common(3):
+            if (k != None and k != '') and province_ == '':
+                province_ = k
+                break
+        city_ = ""
+        for k, v in collections.Counter(citys).most_common(3):
+            if (k != None and k != '') and city_ == '':
+                city_ = k
+                break
+        area_ = ""
+        for k, v in collections.Counter(areas).most_common(3):
+            if (k != None and k != '') and area_ == '':
+                area_ = k
+                break
+        event_ = ""
+        for k, v in collections.Counter(events).most_common(3):
+            if (k != None and k != '') and event_ == '':
+                event_ = k
+                break
+        if event_ != '':
+            tmp = {
+                "post_id": ret[0][0],
+                "province": province_,
+                "city": city_,
+                "area": area_,
+                "time": event_time,
+                "event": event_
+            }
+            context.append(tmp)
     context = json.dumps(context, ensure_ascii=False)
     return HttpResponse(context)
 #台风
@@ -583,25 +623,57 @@ def map_1_collect(request):
 def map_2_collect(request):
     province = str(request.POST["province"])
     cursor = connection.cursor()
-    sql = f"select post_id,province,city,area,`time`,`event` from `event` where (task_id={'or task_id='.join(typhoon_id)}) and province like '%{province}%';"
+    sql = f"select distinct cluster from `event` where (task_id={'or task_id='.join(typhoon_id)}) and province like '%{province}%' order by cluster;"
     cursor.execute(sql);
-    ret = cursor.fetchall()
-    cnt = 0
+    res = cursor.fetchall()
     context = []
-    for i in ret:
-        tmp = {
-            "post_id": i[0],
-            "province": i[1],
-            "city": i[2],
-            "area": i[3],
-            "time": str(i[4]),
-            "event": i[5]
-        }
-        context.append(tmp)
-        cnt += 1
-        if cnt == 10:
-            break
-
+    for cluster in res:
+        provinces = []
+        citys = []
+        areas = []
+        events = []
+        event_time = ""
+        cluster = str(cluster[0])
+        sql = f"select post_id,province,city,area,`time`,`event` from `event` where (task_id={'or task_id='.join(typhoon_id)}) and province like '%{province}%' and cluster = '{cluster}';"
+        cursor.execute(sql);
+        ret = cursor.fetchall()
+        for i in (ret):
+            if event_time == "":
+                event_time = str(i[4])
+            provinces.append(i[1])
+            citys.append(i[2])
+            areas.append(i[3])
+            events.append(i[5])
+        province_ = ""
+        for k, v in collections.Counter(provinces).most_common(3):
+            if (k != None and k != '') and province_ == '':
+                province_ = k
+                break
+        city_ = ""
+        for k, v in collections.Counter(citys).most_common(3):
+            if (k != None and k != '') and city_ == '':
+                city_ = k
+                break
+        area_ = ""
+        for k, v in collections.Counter(areas).most_common(3):
+            if (k != None and k != '') and area_ == '':
+                area_ = k
+                break
+        event_ = ""
+        for k, v in collections.Counter(events).most_common(3):
+            if (k != None and k != '') and event_ == '':
+                event_ = k
+                break
+        if event_ != '':
+            tmp = {
+                "post_id": ret[0][0],
+                "province": province_,
+                "city": city_,
+                "area": area_,
+                "time": event_time,
+                "event": event_
+            }
+            context.append(tmp)
     context = json.dumps(context, ensure_ascii=False)
     return HttpResponse(context)
 #暴雨
@@ -609,24 +681,56 @@ def map_2_collect(request):
 def map_3_collect(request):
     province = str(request.POST["province"])
     cursor = connection.cursor()
-    sql = f"select post_id,province,city,area,`time`,`event` from `event` where (task_id={'or task_id='.join(rainstorm_id)}) and province like '%{province}%';"
+    sql = f"select distinct cluster from `event` where (task_id={'or task_id='.join(rainstorm_id)}) and province like '%{province}%' order by cluster;"
     cursor.execute(sql);
-    ret = cursor.fetchall()
-    cnt = 0
+    res = cursor.fetchall()
     context = []
-    for i in ret:
-        tmp = {
-            "post_id": i[0],
-            "province": i[1],
-            "city": i[2],
-            "area": i[3],
-            "time": str(i[4]),
-            "event": i[5]
-        }
-        context.append(tmp)
-        cnt += 1
-        if cnt == 10:
-            break
-
+    for cluster in res:
+        provinces = []
+        citys = []
+        areas = []
+        events = []
+        event_time = ""
+        cluster = str(cluster[0])
+        sql = f"select post_id,province,city,area,`time`,`event` from `event` where (task_id={'or task_id='.join(rainstorm_id)}) and province like '%{province}%' and cluster = '{cluster}';"
+        cursor.execute(sql);
+        ret = cursor.fetchall()
+        for i in (ret):
+            if event_time == "":
+                event_time = str(i[4])
+            provinces.append(i[1])
+            citys.append(i[2])
+            areas.append(i[3])
+            events.append(i[5])
+        province_ = ""
+        for k, v in collections.Counter(provinces).most_common(3):
+            if (k != None and k != '') and province_ == '':
+                province_ = k
+                break
+        city_ = ""
+        for k, v in collections.Counter(citys).most_common(3):
+            if (k != None and k != '') and city_ == '':
+                city_ = k
+                break
+        area_ = ""
+        for k, v in collections.Counter(areas).most_common(3):
+            if (k != None and k != '') and area_ == '':
+                area_ = k
+                break
+        event_ = ""
+        for k, v in collections.Counter(events).most_common(3):
+            if (k != None and k != '') and event_ == '':
+                event_ = k
+                break
+        if event_ != '':
+            tmp = {
+                "post_id": ret[0][0],
+                "province": province_,
+                "city": city_,
+                "area": area_,
+                "time": event_time,
+                "event": event_
+            }
+            context.append(tmp)
     context = json.dumps(context, ensure_ascii=False)
     return HttpResponse(context)
