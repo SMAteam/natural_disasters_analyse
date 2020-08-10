@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'social_media_data_analyse_system.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'database_1',
+        'NAME': 'social_media_database',
         'USER': 'root',
         'PASSWORD': '123456',
         'HOST': '127.0.0.1',
