@@ -64,3 +64,25 @@ class event(models.Model):
     class Meta:
         unique_together = ("post_id", "task_id")
         db_table = "event"
+class xinlang_manage(models.Model):
+    task_id = models.CharField(max_length=20, primary_key=True)
+    scrapy_id = models.CharField(max_length=500, null=True, blank=True)
+    keyword = models.TextField(null=True, blank=True)
+    range = models.CharField(max_length=10, null=True, blank=True)
+    date_time_begin = models.CharField(max_length=500, null=True, blank=True)
+    date_time_end = models.CharField(max_length=500, null=True, blank=True)
+    real_time_task = models.CharField(max_length=2, null=True, blank=True)
+    class Meta:
+        db_table = "xinlang_manage"
+class xinlang_new(models.Model):
+    post_id = models.AutoField(primary_key=True)
+    author = models.CharField(max_length=100)
+    date = models.DateTimeField(null=True,blank=True)
+    title = models.TextField(null=True,blank=True)
+    brief = models.TextField(null=True,blank=True)
+    content = models.TextField(null=True,blank=True)
+    detail_link = models.CharField(max_length=100)
+    task_id = models.CharField(max_length=20)
+    class Meta:
+        unique_together = ("task_id","post_id")
+        db_table = "xinlang_new"

@@ -115,7 +115,8 @@
                             <li>
                                 <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-email"></i><span> 历史文本 <span class="float-right menu-arrow"><i class="mdi mdi-plus"></i></span> </span></a>
                                 <ul class="submenu">
-                                    <li><a href="history?type=0&relevant=0">自然灾害</a></li>
+                                    <li><a href="history?type=0&relevant=0">微博</a></li>
+                                    <li><a href="history1?type=0&relevant=0">新浪新闻</a></li>
 {#									<li><a href="history2?type=0">疫情</a></li>#}
                                 </ul>
                             </li>
@@ -144,6 +145,7 @@
 
                 </div>
                 <!-- Sidebar -left -->
+
             </div>
                 <div id="allmap"></div>
 				<div id="weibo"></div>
@@ -313,7 +315,8 @@
                         weibo.style.background="#FFFFFF";
                         weibo.innerHTML='<div class="card"><ul class="message-list">';
                         for(var i=0;i<res.length;i++){
-                            var post_id = String(res[i].post_id);
+                            var task_id = String(res[i].task_id);
+                            var cluster = String(res[i].clus);
                             var province = String(res[i].province);
                             if(province=="null"){
                                 province = "";
@@ -328,7 +331,7 @@
                             }
                             var time = String(res[i].time);
                             var event = String(res[i].event);
-                            weibo.innerHTML=weibo.innerHTML+"<li id='"+String(i)+"'><div class='col-mail col-mail-1'><div class='date'>时间："+String(time)+"</div><div class='date'>地点："+String(province)+String(city)+String(area)+"</div><a href='detail?id="+String(post_id)+"' class='title'>灾害事件:"+String(event)+'</a></div><div class="col-mail col-mail-2"></div></li>';
+                            weibo.innerHTML=weibo.innerHTML+"<li id='"+String(i)+"'><div class='col-mail col-mail-1'><div class='date'>时间："+String(time)+"</div><div class='date'>地点："+String(province)+String(city)+String(area)+"</div><a href='detail_all?task_id="+String(task_id)+"&province="+String(province)+"&cluster="+String(cluster)+"' class='title'>灾害事件:"+String(event)+'</a></div><div class="col-mail col-mail-2"></div></li>';
 							weibo.innerHTML=weibo.innerHTML+"<div style='min-height:20px;'></div>";
                         }
                         t.innerHTML=t.innerHTML+'</ul></div></div></div>';

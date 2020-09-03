@@ -1,38 +1,29 @@
 import os
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from .tasks import earthquake_noise, typhoon_noise, rainstorm_noise, earthquake_event, typhoon_event, rainstorm_event, \
-    earthquake_category, rainstorm_category, typhoon_category, earthquake_cluster, typhoon_cluster, rainstorm_cluster
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
+#from .tasks import earthquake_noise, typhoon_noise, rainstorm_noise, earthquake_event, typhoon_event, rainstorm_event, \
+#    earthquake_category, rainstorm_category, typhoon_category, earthquake_cluster, typhoon_cluster, rainstorm_cluster
+from .tasks import earthquake_noise1,rainstorm_noise1,typhoon_noise1
+
+# 微博
 earthquake_id = ['\'1_1\'']
 rainstorm_id = ['\'1_2\'']
 typhoon_id = ['\'1_3\'']
+# 新浪新闻
+earthquake_id1 = ['\'2_1\'']
+rainstorm_id1 = ['\'2_2\'']
+typhoon_id1 = ['\'2_3\'']
 
 from django.shortcuts import render
-from .models import weibo_post,noise_judge,category,event
+from .models import weibo_post, noise_judge, category, event, xinlang_new
 import json
 import random
 from django.db import connection
 import collections
 def home(request):
-
-
-    # earthquake_noise()
-    # typhoon_noise()
-    # rainstorm_noise()
-    #
-    # earthquake_category()
-    # typhoon_category()
-    # rainstorm_category()
-    #
-    # earthquake_event()
-    # typhoon_event()
-    # rainstorm_event()
-    #
-    # earthquake_cluster()
-    # typhoon_cluster()
-    # rainstorm_cluster()
-
+    rainstorm_noise1()
     cursor = connection.cursor()
     # 统计每个月灾害文章数量
     sql1 = f"select DATE_FORMAT(post_time,'%Y-%m'),count(*) from weibo_post,noise_judge where noise='0' and (noise_judge.task_id={'or noise_judge.task_id='.join(earthquake_id)}) and weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id group by DATE_FORMAT(post_time,'%Y-%m');"
@@ -104,56 +95,105 @@ def history(request):
     cursor = connection.cursor()
     type = request.GET['type']
     relevant = request.GET['relevant']
+    page_now = abs(int(request.GET.get('page',-1)))
     if type == '0' and relevant == '0':
-        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id order by post_time DESC limit 1000;"
+        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id order by post_time DESC;"
     elif type == '1' and relevant == '0':
-        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(earthquake_id)}) order by post_time DESC limit 1000;"
+        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(earthquake_id)}) order by post_time DESC;"
     elif type == '2' and relevant == '0':
-        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(typhoon_id)}) order by post_time DESC limit 1000;"
+        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(typhoon_id)}) order by post_time DESC;"
     elif type == '3' and relevant == '0':
-        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(rainstorm_id)}) order by post_time DESC limit 1000;"
+        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(rainstorm_id)}) order by post_time DESC;"
 
     elif type == '0' and relevant == '1':
-        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and noise='0' order by post_time DESC limit 1000;"
+        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and noise='0' order by post_time DESC;"
     elif type == '1' and relevant == '1':
-        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(earthquake_id)}) and noise='0' order by post_time DESC limit 1000;"
+        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(earthquake_id)}) and noise='0' order by post_time DESC;"
     elif type == '2' and relevant == '1':
-        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(typhoon_id)}) and noise='0' order by post_time DESC limit 1000;"
+        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(typhoon_id)}) and noise='0' order by post_time DESC;"
     elif type == '3' and relevant == '1':
-        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(rainstorm_id)}) and noise='0' order by post_time DESC limit 1000;"
+        sql = f"select weibo_post.post_id,noise,post_time,post_content from weibo_post,noise_judge where weibo_post.post_id=noise_judge.post_id and weibo_post.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(rainstorm_id)}) and noise='0' order by post_time DESC;"
     cursor.execute(sql)
     ret = cursor.fetchall()
-    isnoise = []
-    weibo_id = []
-    time = []
-    text = []
-    num_rows = 0
-    page_one =[]
+    page_list = []
     for row in ret:
-        num_rows+=1
-        isnoise.append(row[1])
-        weibo_id.append(row[0])
-        time.append(str(row[2])[:10])
-        text.append(row[3])
-        if num_rows<=15:
-            record = {
-                'isnoise': row[1],
-                'num_rows':num_rows-1,
+        record = {
+                'isnoise': "相关" if str(row[1])=='0' else "不相关",
                 'weibo_id': row[0],
-                'original_text':row[3][3:],
+                'original_text':row[3],
                 'time': str(row[2])[:10]
             }
-            page_one.append(record)
-    context = {
-        'weibojson': json.dumps(weibo_id),
-        'timejson': json.dumps(time),
-        'textjson': json.dumps(text),
-        'isnoisejson': json.dumps(isnoise),
-        'page_one': page_one,
-    }
-    return render(request, 'history.html',context)
-def detail(request):
+        page_list.append(record)
+    paginator = Paginator(page_list,20)
+
+    if paginator.num_pages > 7:
+        if page_now - 3 < 1:
+            page_range = range(1, 7)
+        elif page_now + 3 > paginator.num_pages:
+            page_range = range(paginator.num_pages - 6, paginator.num_pages + 1)
+        else:
+            page_range = range(page_now - 3, page_now + 4)
+    else:
+        page_range = paginator.page_range
+    try:
+        page = paginator.page(page_now)
+    except EmptyPage as e:
+        # 如果出现的是负数，或者大于页码的数，我们默认让其显示第一页
+        page = paginator.page(1)
+
+    return render(request, 'history.html', {"page":page,"page_range":page_range})
+def history1(request):
     cursor = connection.cursor()
+    type = request.GET['type']
+    relevant = request.GET['relevant']
+    page_now = abs(int(request.GET.get('page',-1)))
+    if type == '0' and relevant == '0':
+        xinlang_new.objects.filter()
+        sql = f"select xinlang_new.post_id,noise,date,title from xinlang_new,noise_judge where xinlang_new.post_id=noise_judge.post_id and xinlang_new.task_id=noise_judge.task_id order by date DESC limit 1000;"
+    elif type == '1' and relevant == '0':
+        sql = f"select xinlang_new.post_id,noise,date,title from xinlang_new,noise_judge where xinlang_new.post_id=noise_judge.post_id and xinlang_new.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(earthquake_id1)}) order by date DESC;"
+    elif type == '2' and relevant == '0':
+        sql = f"select xinlang_new.post_id,noise,date,title from xinlang_new,noise_judge where xinlang_new.post_id=noise_judge.post_id and xinlang_new.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(typhoon_id1)}) order by date DESC;"
+    elif type == '3' and relevant == '0':
+        sql = f"select xinlang_new.post_id,noise,date,title from xinlang_new,noise_judge where xinlang_new.post_id=noise_judge.post_id and xinlang_new.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(rainstorm_id1)}) order by date DESC;"
+
+    elif type == '0' and relevant == '1':
+        sql = f"select xinlang_new.post_id,noise,date,title from xinlang_new,noise_judge where xinlang_new.post_id=noise_judge.post_id and xinlang_new.task_id=noise_judge.task_id and noise='0' order by date DESC limit 1000;"
+    elif type == '1' and relevant == '1':
+        sql = f"select xinlang_new.post_id,noise,date,title from xinlang_new,noise_judge where xinlang_new.post_id=noise_judge.post_id and xinlang_new.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(earthquake_id1)}) and noise='0' order by date DESC;"
+    elif type == '2' and relevant == '1':
+        sql = f"select xinlang_new.post_id,noise,date,title from xinlang_new,noise_judge where xinlang_new.post_id=noise_judge.post_id and xinlang_new.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(typhoon_id1)}) and noise='0' order by date DESC;"
+    elif type == '3' and relevant == '1':
+        sql = f"select xinlang_new.post_id,noise,date,title from xinlang_new,noise_judge where xinlang_new.post_id=noise_judge.post_id and xinlang_new.task_id=noise_judge.task_id and (noise_judge.task_id={'or noise_judge.task_id='.join(rainstorm_id1)}) and noise='0' order by date DESC;"
+    cursor.execute(sql)
+    ret = cursor.fetchall()
+    page_list = []
+    for row in ret:
+        record = {
+                'isnoise': "相关" if str(row[1])=='0' else "不相关",
+                'weibo_id': row[0],
+                'original_text':row[3],
+                'time': str(row[2])[:10]
+            }
+        page_list.append(record)
+    paginator = Paginator(page_list,20)
+    if paginator.num_pages > 7:
+        if page_now - 3 < 1:
+            page_range = range(1, 7)
+        elif page_now + 3 > paginator.num_pages:
+            page_range = range(paginator.num_pages - 6, paginator.num_pages + 1)
+        else:
+            page_range = range(page_now - 3, page_now + 4)
+    else:
+        page_range = paginator.page_range
+    try:
+        page = paginator.page(page_now)
+    except EmptyPage as e:
+        # 如果出现的是负数，或者大于页码的数，我们默认让其显示第一页
+        page = paginator.page(1)
+
+    return render(request, 'history1.html', {"page":page,"page_range":page_range})
+def detail(request):
     id = request.GET['id']
     row = weibo_post.objects.filter(post_id=id).first()
     context = {
@@ -163,6 +203,42 @@ def detail(request):
         'text': row.post_content
     }
     return render(request, 'detail.html', context)
+def detail1(request):
+    id = request.GET['id']
+    row = xinlang_new.objects.filter(post_id=id).first()
+    context = {
+        'weibo_id': row.post_id,
+        'title': row.title,
+        'time': row.date,
+        'text': row.content
+    }
+    return render(request, 'detail1.html', context)
+def detail_all(request):
+    cursor = connection.cursor()
+    task_id = str(request.GET['task_id'])
+    task_id = task_id.split('-')
+    tmp = []
+    for i in task_id:
+        tmp.append("'"+i+"'")
+    task_id = tmp
+    province = str(request.GET['province'])
+    cluster = str(request.GET['cluster'])
+    sql = f"select weibo_post.post_id,weibo_post.user_id,weibo_post.post_time,weibo_post.post_content from `event` e,weibo_post where weibo_post.post_id=e.post_id and weibo_post.task_id=e.task_id and (weibo_post.task_id={'or weibo_post.task_id='.join(task_id)}) and province like '%{province}%' and cluster='{cluster}' order by post_time;"
+    cursor.execute(sql);
+    res = cursor.fetchall()
+    data = []
+    for row in res:
+        tmp = {
+            'weibo_id': str(row[0]),
+            'user_id': str(row[1]),
+            'time': str(row[2]),
+            'text': str(row[3])
+        }
+        data.append(tmp)
+    context = {
+        'datas':data
+    }
+    return render(request, 'detail_all.html', context)
 def statistical(request):
     cursor = connection.cursor()
     #地震
@@ -563,6 +639,8 @@ def map_3(request):
 #地震
 @csrf_exempt
 def map_1_collect(request):
+    task_id = [i.replace("'", "") for i in earthquake_id]
+    task_id = '-'.join(task_id)
     province = str(request.POST["province"])
     cursor = connection.cursor()
     sql = f"select distinct cluster from `event` where (task_id={'or task_id='.join(earthquake_id)}) and province like '%{province}%' order by cluster;"
@@ -608,7 +686,8 @@ def map_1_collect(request):
                 break
         if event_ != '':
             tmp = {
-                "post_id": ret[0][0],
+                "task_id": task_id,
+                'clus': cluster,
                 "province": province_,
                 "city": city_,
                 "area": area_,
@@ -621,6 +700,8 @@ def map_1_collect(request):
 #台风
 @csrf_exempt
 def map_2_collect(request):
+    task_id = [i.replace("'", "") for i in typhoon_id]
+    task_id = '-'.join(task_id)
     province = str(request.POST["province"])
     cursor = connection.cursor()
     sql = f"select distinct cluster from `event` where (task_id={'or task_id='.join(typhoon_id)}) and province like '%{province}%' order by cluster;"
@@ -666,7 +747,8 @@ def map_2_collect(request):
                 break
         if event_ != '':
             tmp = {
-                "post_id": ret[0][0],
+                "task_id": task_id,
+                'clus': cluster,
                 "province": province_,
                 "city": city_,
                 "area": area_,
@@ -679,6 +761,8 @@ def map_2_collect(request):
 #暴雨
 @csrf_exempt
 def map_3_collect(request):
+    task_id = [i.replace("'","") for i in rainstorm_id]
+    task_id = '-'.join(task_id)
     province = str(request.POST["province"])
     cursor = connection.cursor()
     sql = f"select distinct cluster from `event` where (task_id={'or task_id='.join(rainstorm_id)}) and province like '%{province}%' order by cluster;"
@@ -724,7 +808,8 @@ def map_3_collect(request):
                 break
         if event_ != '':
             tmp = {
-                "post_id": ret[0][0],
+                "task_id": task_id,
+                'clus': cluster,
                 "province": province_,
                 "city": city_,
                 "area": area_,

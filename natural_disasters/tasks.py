@@ -1,3 +1,4 @@
+import gc
 import json
 import re
 import jieba.posseg as poss
@@ -14,11 +15,15 @@ from natural_disasters.business_models.rainstorm.noise_judge.predict import Pred
 from celery import task
 import tensorflow as tf
 from django.db.models import Q
-# 垃圾判断代码
+# 微博
 earthquake_id = ['\'1_1\'']
 rainstorm_id = ['\'1_2\'']
 typhoon_id = ['\'1_3\'']
-
+# 新浪新闻
+earthquake_id1 = ['\'2_1\'']
+rainstorm_id1 = ['\'2_2\'']
+typhoon_id1 = ['\'2_3\'']
+# 垃圾判断代码
 @task
 def earthquake_noise():
     cursor = connection.cursor()
@@ -55,23 +60,41 @@ def earthquake_noise():
             noise_judges.append(t)
     noise_judge.objects.bulk_create(noise_judges)
     cursor.close()
+    gc.collect()
+    print("earthquake_noise end")
+@task
+def earthquake_noise1():
+    cursor = connection.cursor()
+    print('earthquake_noise begin')
+    sql = f"select post_id,task_id,title from xinlang_new where (task_id={'or task_id='.join(earthquake_id1)}) and CONCAT(task_id,'_',post_id) not in (select CONCAT(task_id,'_',post_id) from noise_judge);"
+    cursor.execute(sql)
+    text = cursor.fetchall()
+    noise_judges = []
+    for content in text:
+        if '瞳孔地震' in content[2] or '和地震一样' in content[2] or '像地震' in content[2] or '洛杉矶银河' in content[2] or '跟地震一样' in \
+                content[2] or '跟地震似的' in content[2] or '梦到地震' in content[2] or '祭' in content[2] or '免费围观' in content[
+            2] or '地震局' in content[2] or '地震科普' in content[2] or '转发微博' in content[2] or '地震演练' in content[
+            2] or '转发微博' in content[2] or "美职足" in content[2] or "世界杯" in content[2] or "财经" in content[
+            2] or "每日足球推荐" in content[2] or "体育" in content[2] or "电影" in content[2]:
+            t = noise_judge(post_id=content[0], task_id=content[1], noise='1')
+            noise_judges.append(t)
+        else:
+            t = noise_judge(post_id=content[0], task_id=content[1], noise='0')
+            noise_judges.append(t)
+        print("success")
+
+    noise_judge.objects.bulk_create(noise_judges)
+    cursor.close()
+    gc.collect()
     print("earthquake_noise end")
 @task
 def rainstorm_noise():
     cursor = connection.cursor()
     print('rainstorm_noise begin')
-    task_name = 'rainstorm'
-    task_cate = 'noise_judge'
     sql = f"select post_id,task_id,post_content from weibo_post where (task_id={'or task_id='.join(rainstorm_id)}) and CONCAT(task_id,'_',post_id) not in (select CONCAT(task_id,'_',post_id) from noise_judge);"
     cursor.execute(sql)
     text = cursor.fetchall()
     noise_judges = []
-    # with open(
-    #         os.path.join(os.path.dirname(__file__),
-    #                      f"business_models/{task_name}/{task_cate}/config/textcnn_config.json")) as f:
-    #     config = json.load(f)
-    # tf.reset_default_graph()
-    # predictor = rainstorm_noise_model(config)
     for content in text:
         try:
             if "周震南" in content[2] or '蜕变之战' in content[2] or '台团综' in content[2] or '转发微博' in content[2] or '舞台' in \
@@ -82,13 +105,33 @@ def rainstorm_noise():
                 t = noise_judge(post_id=content[0], task_id=content[1], noise='0')
                 noise_judges.append(t)
             else:
-                # result = predictor.predict([item for item in jieba.cut(content[2], cut_all=False)])
-                # if int(result) == 1:
-                #     t = noise_judge(post_id=content[0], task_id=content[1], noise='0')
-                #     noise_judges.append(t)
-                # else:
-                #     t = noise_judge(post_id=content[0], task_id=content[1], noise='1')
-                #     noise_judges.append(t)
+                t = noise_judge(post_id=content[0], task_id=content[1], noise='0')
+                noise_judges.append(t)
+        except:
+            print(content[2]);
+    noise_judge.objects.bulk_create(noise_judges)
+    cursor.close()
+    gc.collect()
+    print("rainstorm_noise end")
+    return
+@task
+def rainstorm_noise1():
+    cursor = connection.cursor()
+    print('rainstorm_noise begin')
+    sql = f"select post_id,task_id,title from xinlang_new where (task_id={'or task_id='.join(rainstorm_id1)}) and CONCAT(task_id,'_',post_id) not in (select CONCAT(task_id,'_',post_id) from noise_judge);"
+    cursor.execute(sql)
+    text = cursor.fetchall()
+    noise_judges = []
+    for content in text:
+        try:
+            if "周震南" in content[2] or '蜕变之战' in content[2] or '台团综' in content[2] or '转发微博' in content[2] or '舞台' in \
+                    content[2]:
+                t = noise_judge(post_id=content[0], task_id=content[1], noise='1')
+                noise_judges.append(t)
+            elif '红色预警' in content[2] or '黄色预警' in content[2] or '蓝色预警' in content[2]:
+                t = noise_judge(post_id=content[0], task_id=content[1], noise='0')
+                noise_judges.append(t)
+            else:
                 t = noise_judge(post_id=content[0], task_id=content[1], noise='0')
                 noise_judges.append(t)
         except:
@@ -133,6 +176,30 @@ def typhoon_noise():
             print(content[2])
     noise_judge.objects.bulk_create(noise_judges)
     cursor.close()
+    print("typhoon_noise end")
+    return
+@task
+def typhoon_noise1():
+    cursor = connection.cursor()
+    print('typhoon_noise begin')
+    sql = f"select post_id,task_id,title from xinlang_new where (task_id={'or task_id='.join(typhoon_id1)}) and CONCAT(task_id,'_',post_id) not in (select CONCAT(task_id,'_',post_id) from noise_judge);"
+    cursor.execute(sql)
+    text = cursor.fetchall()
+    noise_judges = []
+    for content in text:
+        try:
+            if '台风' not in content[2] or "周震南" in content[2] or '蜕变之战' in content[2] or '台团综' in content[2] or '转发微博' in \
+                    content[2] or '舞台' in content[2]:
+                t = noise_judge(post_id=content[0], task_id=content[1], noise='1')
+                noise_judges.append(t)
+            else:
+                t = noise_judge(post_id=content[0], task_id=content[1], noise='0')
+                noise_judges.append(t)
+        except:
+            print(content[2])
+    noise_judge.objects.bulk_create(noise_judges)
+    cursor.close()
+    gc.collect()
     print("typhoon_noise end")
     return
 
@@ -221,6 +288,7 @@ def typhoon_category():
     cursor.close()
     print("typhoon_category end")
     return
+
 
 
 def cut_sent(para):

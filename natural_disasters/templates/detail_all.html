@@ -140,6 +140,7 @@
                 <!-- Start content -->
                 <div class="content">
                     <div class="container-fluid">
+
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="page-title-box">
@@ -172,16 +173,18 @@
                                     <!-- Right Sidebar -->
                                     <div class="email-rightbar mb-3">
                                         <div class="card">
-                                            <div class="card-body">
-                                                <div class="media m-b-30">
-                                                    <img class="d-flex mr-3 rounded-circle thumb-md" src="../static/assets/images/users/user-1.jpg" alt="Generic placeholder image">
-                                                    <div class="media-body">
-                                                        <h4 class="font-14 m-0">WeiBo_Id:{{ weibo_id }}&nbsp;&nbsp;User_id:{{user_id}}</h4>
-                                                        <small class="text-muted">{{ time }}</small>
+                                            {% for row in datas %}
+                                                <div class="card-body">
+                                                    <div class="media m-b-30">
+                                                        <img class="d-flex mr-3 rounded-circle thumb-md" src="../static/assets/images/users/user-1.jpg" alt="Generic placeholder image">
+                                                        <div class="media-body">
+                                                            <h4 class="font-14 m-0">WeiBo_Id:{{ row.weibo_id }}&nbsp;&nbsp;User_id:{{row.user_id}}</h4>
+                                                            <small class="text-muted">{{ row.time }}</small>
+                                                        </div>
                                                     </div>
+                                                    <p id="p">{{ row.text }}</p>
                                                 </div>
-                                                <p id="p">{{ text }}</p>
-                                            </div>
+                                            {% endfor %}
                                         </div>
 
                                     </div> <!-- end Col-9 -->
@@ -217,43 +220,43 @@
 		</script>
 
 
-		<!-- jQuery  -->
-        <script src="../static/assets/js/jquery.min.js"></script>
-        <script src="../static/assets/js/bootstrap.bundle.min.js"></script>
-        <script src="../static/assets/js/metisMenu.min.js"></script>
-        <script src="../static/assets/js/jquery.slimscroll.js"></script>
-        <script src="../static/assets/js/waves.min.js"></script>
-
-
-        <script src="../static/plugins/morris/morris.min.js"></script>
-        <script src="../static/plugins/raphael/raphael-min.js"></script>
-		<script src="../static/plugins/chartist/js/chartist.min.js"></script>
-        <script src="../static/plugins/chartist/js/chartist-plugin-tooltip.min.js"></script>
-		<script src="../static/assets/pages/morris.init.js"></script>
-		<script src="../static/assets/pages/chartist.init.js"></script>
-
-        <script src="../static/plugins/jquery-sparkline/jquery.sparkline.min.js"></script>
-
-        <!-- App js -->
-        <script src="../static/assets/js/app.js"></script>
-
-		<script language='javascript'>
-			Morris.Area({
-				element: 'morris-area-example',
-				pointSize: 0,
-				lineWidth: 0,
-				data: areaData,
-				xkey:  '时间',
-				ykeys: ['微博条数'],
-				labels:  ['微博条数'],
-				resize: true,
-				gridLineColor: '#eee',
-				hideHover: 'auto',
-				lineColors:['#f16c69'],
-				fillOpacity: .7,
-				behaveLikeLine: true
-			});
-        </script>
+{#		<!-- jQuery  -->#}
+{#        <script src="../static/assets/js/jquery.min.js"></script>#}
+{#        <script src="../static/assets/js/bootstrap.bundle.min.js"></script>#}
+{#        <script src="../static/assets/js/metisMenu.min.js"></script>#}
+{#        <script src="../static/assets/js/jquery.slimscroll.js"></script>#}
+{#        <script src="../static/assets/js/waves.min.js"></script>#}
+{##}
+{##}
+{#        <script src="../static/plugins/morris/morris.min.js"></script>#}
+{#        <script src="../static/plugins/raphael/raphael-min.js"></script>#}
+{#		<script src="../static/plugins/chartist/js/chartist.min.js"></script>#}
+{#        <script src="../static/plugins/chartist/js/chartist-plugin-tooltip.min.js"></script>#}
+{#		<script src="../static/assets/pages/morris.init.js"></script>#}
+{#		<script src="../static/assets/pages/chartist.init.js"></script>#}
+{##}
+{#        <script src="../static/plugins/jquery-sparkline/jquery.sparkline.min.js"></script>#}
+{##}
+{#        <!-- App js -->#}
+{#        <script src="../static/assets/js/app.js"></script>#}
+{##}
+{#		<script language='javascript'>#}
+{#			Morris.Area({#}
+{#				element: 'morris-area-example',#}
+{#				pointSize: 0,#}
+{#				lineWidth: 0,#}
+{#				data: areaData,#}
+{#				xkey:  '时间',#}
+{#				ykeys: ['微博条数'],#}
+{#				labels:  ['微博条数'],#}
+{#				resize: true,#}
+{#				gridLineColor: '#eee',#}
+{#				hideHover: 'auto',#}
+{#				lineColors:['#f16c69'],#}
+{#				fillOpacity: .7,#}
+{#				behaveLikeLine: true#}
+{#			});#}
+{#        </script>#}
 
 
     </body>

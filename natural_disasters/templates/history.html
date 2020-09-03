@@ -3,6 +3,44 @@
 <html lang="en">
 
     <head>
+        <style type="text/css">
+            /*设置 a 标签的css样式*/
+            .page-normal a{
+                border: 1px solid #ff6500;
+                padding: 5px 7px;
+                color: #ff6500;
+                margin-left: 20px;/*设置标签 a 之间的间隔*/
+                text-decoration: none;/*去除页码数字下面的下划线*/
+            }
+            /*设置鼠标经过时 a 标签的css样式*/
+            .page-normal a:hover{
+                background-color: #ffbe94;
+            }
+
+            /*设置整个div的css样式,该样式主要用于设置网页内的省略号 …… 的样式，并且同时设置内容居中显示*/
+            .page-normal{
+                color: #ff6500;
+                text-align: center;
+            }
+
+            /*设置当前页面的css样式*/
+            .page-normal .page-current{
+                color: #ffffff;
+                background-color: #ff6500;
+            }
+
+            /*设置左单括号 < 的css样式*/
+            .page-normal .page-prev{
+                color: #ffe3c6;
+            }
+
+            /*进行代码优化，将不同css样式中共有的属性放在一起，有助于提高运行效率*/
+            .page-normal a, .page-normal a:hover, .page-normal .page-prev, .page-normal .page-current{
+                border: 1px solid #ff6500;
+                padding: 5px 7px;
+            }
+        </style>
+
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
@@ -99,7 +137,8 @@
                             <li>
                                 <a href="javascript:void(0);" class="waves-effect"><i class="mdi mdi-email"></i><span> 历史文本 <span class="float-right menu-arrow"><i class="mdi mdi-plus"></i></span> </span></a>
                                 <ul class="submenu">
-                                    <li><a href="history?type=0&relevant=0">自然灾害</a></li>
+                                    <li><a href="history?type=0&relevant=0">微博</a></li>
+                                    <li><a href="history1?type=0&relevant=0">新浪新闻</a></li>
 {#									<li><a href="history2?type=0">疫情</a></li>#}
                                 </ul>
                             </li>
@@ -139,7 +178,6 @@
                 <!-- Start content -->
                 <div class="content">
                     <div class="container-fluid">
-
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="page-title-box">
@@ -151,7 +189,6 @@
                             </div>
                         </div>
                         <!-- end row -->
-
                         <div class="page-content-wrapper">
                             <!-- end row -->
                             <div class="row">
@@ -165,10 +202,7 @@
                                             <a href="history?type=2&relevant=0">台风</a>
                                             <a href="history?type=3&relevant=0">暴雨</a>
                                         </div>
-
-
                                         <h6 class="m-t-30">标签</h6>
-
                                         <div class="mail-list m-t-20">
                                             <a href="history?type={{ request.GET.type }}&relevant=1"><span class="mdi mdi-arrow-right-drop-circle text-info float-right"></span>只保留相关微博</a>
                                             <a href="history?type={{ request.GET.type }}&relevant=0"><span class="mdi mdi-arrow-right-drop-circle text-warning float-right"></span>全部微博</a>
@@ -181,30 +215,39 @@
                                     <div class="email-rightbar mb-3">
 
                                         <div class="card">
-                                            <div class="btn-toolbar p-3" role="toolbar">
-                                            </div>
+                                            <div class="btn-toolbar p-3" role="toolbar"></div>
                                             <ul class="message-list">
-                                                {% for row in page_one %}
-                                                    {% if row.isnoise == '0' %}
-                                                        <li id='{{ row.num_rows }}'><div class='col-mail col-mail-1'><a href='detail?id={{ row.weibo_id }}' class='title'>weibo id:{{ row.weibo_id }}</a></div><div class="col-mail col-mail-2"><a href="detail?id={{ row.weibo_id }}" class="subject"><span class="mdi mdi-arrow-right-drop-circle text-info float-right">相关</span>{{ row.original_text }}</a><div class="date">{{ row.time }}</div></div></li>
-                                                    {% else %}
-                                                        <li id='{{ row.num_rows }}'><div class='col-mail col-mail-1'><a href='detail?id={{ row.weibo_id }}' class='title'>weibo id:{{ row.weibo_id }}</a></div><div class="col-mail col-mail-2"><a href="detail?id={{ row.weibo_id }}" class="subject"><span class="mdi mdi-arrow-right-drop-circle text-warning float-right">不相关</span>{{ row.original_text }}</a><div class="date">{{ row.time }}</div></div></li>
-                                                    {% endif %}
-                                                {% endfor %}
+                                                {%for row in page%}
+                                                    <li><div class='col-mail col-mail-1'><a href='detail?id={{ row.weibo_id }}' class='title'>weibo id:{{ row.weibo_id }}</a></div><div class="col-mail col-mail-2"><a href="detail?id={{ row.weibo_id }}" class="subject"><span class="mdi mdi-arrow-right-drop-circle text-info float-right">{{ row.isnoise }}</span>{{ row.original_text }}</a><div class="date">{{ row.time }}</div></div></li>
+                                                {%endfor%}
                                             </ul>
                                         </div>
-                                    </div> <!-- card -->
-
-                                    <div class="row m-t-20">
-                                        <!--<div class="col-7">
-                                            Showing 1 - 20 of 1,524
-                                        </div>-->
-                                        <div class="col-5">
-                                            <div class="btn-group float-right">
-                                                <button type="button" class="btn btn-sm btn-success waves-effect" onclick="onPre()"><i class="fa fa-chevron-left"></i></button>
-                                                <button type="button" class="btn btn-sm btn-success waves-effect" onclick="onNext()"><i class="fa fa-chevron-right"></i></button>
-                                            </div>
+                                        {#分页#}
+                                        <div class="page-normal">
+                                            {% if page.has_previous %}
+                                                <span><a href="history?type={{ request.GET.type }}&relevant=1&page={{page.previous_page_number}}" aria-label="Previous">&lt;</a></span>
+                                            {% endif %}
+                                            {% for num in page_range%}
+                                                {%if num == page.number%}
+                                                    <span class="page-current">{{ num }}</span>
+                                                {%else%}
+                                                    <a href="history?type={{ request.GET.type }}&relevant=1&page={{ num }}">{{ num }}</a>
+                                                {%endif%}
+                                            {% endfor %}
+                                            {% if page.has_next %}
+                                                <a href="history?type={{ request.GET.type }}&relevant=1&page={{page.next_page_number}}">&gt;</a>
+                                            {% endif %}
+                                            共{{ page.paginator.num_pages }}页数据
                                         </div>
+
+                                        <nav aria-label="Page navigation">
+                                            <div class="pagination">
+                                                <ul class="pagination">
+
+
+                                                </ul>
+                                            </div>
+                                        </nav>
                                     </div>
 
                                 </div> <!-- end Col-9 -->
@@ -223,185 +266,7 @@
             </div>
 
 
-            <!-- ============================================================== -->
-            <!-- End Right content here -->
-            <!-- ============================================================== -->
-
-
         </div>
-        <!-- END wrapper -->
-
-
-
-		<script language='javascript'>
-            var weiboid={{ weibojson|safe }};
-            // var userid={{ userjson|safe }};
-            var time={{ timejson|safe }};
-            var text={{ textjson|safe }};
-            var isnoise={{ isnoisejson|safe }};
-
-
-			var _page_index = 0;
-			var PAGE_SIZE = 20;
-			var _rows_count = weiboid.length;
-			var _page_count = 0;
-			var _start_index = 0;
-			var _end_index = 4;
-
-			var status=0; //0:原文，1:筛选后，2:地理位置
-
-			function create_table(startIndex, endIndex)
-			{
-				var str = "";
-				for(var i = startIndex; i <= endIndex; ++i)
-				{
-					if(isnoise[i]=='0'){
-						str="<div class='col-mail col-mail-1'><a href='detail?id="+String(weiboid[i])+"' class='title'>weibo id:"+String(weiboid[i])+'</a></div> <div class="col-mail col-mail-2"><a href="detail?id='+String(weiboid[i])+'" class="subject"><span class="mdi mdi-arrow-right-drop-circle text-info float-right">相关</span>'+String(text[i].substr(1))+'</a><div class="date">'+String(time[i].substr(0,10))+"</div></div>";
-					}
-					else{
-						str="<div class='col-mail col-mail-1'><a href='detail?id="+String(weiboid[i])+"' class='title'>weibo id:"+String(weiboid[i])+'</a></div> <div class="col-mail col-mail-2"><a href="detail?id='+String(weiboid[i])+'" class="subject"><span class="mdi mdi-arrow-right-drop-circle text-warning float-right">不相关</span>'+String(text[i].substr(1))+'</a><div class="date">'+String(time[i].substr(0,10))+"</div></div>";
-					}
-
-					console.log(str);
-
-					var complete=document.getElementById(String(i%20));
-					complete.innerHTML = str;
-				}
-
-
-				if( endIndex%20 !=0){
-					for(var i=endIndex%20;i<=20;i++){
-						var str="";
-						var complete=document.getElementById(String(i));
-						complete.innerHTML = str;
-					}
-				}
-			}
-
-			function count_page_count(rows_count, page_size)
-			{
-				var page_count = 0;
-				if(rows_count % page_size == 0)
-				{
-					page_count = rows_count / page_size;
-				}
-				else
-				{
-					page_count = parseInt(rows_count / page_size) + 1;
-				}
-				return page_count;
-			}
-
-			function show_page_complete()
-			{
-				var spnRowsCount = document.getElementById("spnRowsCount");
-				var spnPageCount = document.getElementById("spnPageCount");
-				var spnPageIndex = document.getElementById("spnPageIndex");
-				var spnPageSize = document.getElementById("spnPageSize");
-
-				_page_count = count_page_count(_rows_count, PAGE_SIZE);
-
-				spnRowsCount.innerText = _rows_count;
-				spnPageCount.innerText = _page_count;
-				spnPageIndex.innerText = _page_index + 1;
-				spnPageSize.innerText = PAGE_SIZE;
-
-
-			}
-
-			function get_index(page_index, page_size, rows_count)
-			{
-				var start_index = 0;
-				var end_index = 0;
-
-				start_index = page_index * page_size;
-				end_index = (page_index + 1) * page_size - 1;
-				console.log(rows_count);
-				if(end_index >= rows_count)
-				{
-					end_index = rows_count - 1;
-				}
-
-				return {"start_index" : start_index, "end_index" : end_index};
-			}
-
-			function onFirst()
-			{
-				if(_page_index == 0)
-				{
-					alert("已经是第一页");
-					return;
-				}
-
-				_page_index = 0;
-				index = get_index(_page_index, PAGE_SIZE, _rows_count);
-				show_page_complete();
-				create_table(index.start_index, index.end_index);
-			}
-
-			function onPre()
-			{
-				if(_page_index == 0)
-				{
-					alert("已经是第一页");
-					return;
-				}
-				_page_index = _page_index - 1;
-
-				index = get_index(_page_index, PAGE_SIZE, _rows_count);
-				//show_page_complete();
-				create_table(index.start_index, index.end_index);
-			}
-
-			function onNext()
-			{
-				if(_page_index == _page_count - 1)
-				{
-					alert("已经是最后一页");
-					return;
-				}
-				_page_index = _page_index + 1;
-
-				index = get_index(_page_index, PAGE_SIZE, _rows_count);
-				//show_page_complete();
-				create_table(index.start_index, index.end_index);
-			}
-
-			function onLast()
-			{
-				if(_page_index == _page_count - 1)
-				{
-					alert("已经是最后一页");
-					return;
-				}
-
-				_page_index = _page_count - 1;
-
-				index = get_index(_page_index, PAGE_SIZE, _rows_count);
-				show_page_complete();
-				create_table(index.start_index, index.end_index);
-			}
-
-
-
-
-			show_page_complete();
-
-		</script>
-
-
-        <!-- jQuery  -->
-        <script src="../static/assets/js/jquery.min.js"></script>
-        <script src="../static/assets/js/bootstrap.bundle.min.js"></script>
-        <script src="../static/assets/js/metisMenu.min.js"></script>
-        <script src="../static/assets/js/jquery.slimscroll.js"></script>
-        <script src="../static/assets/js/waves.min.js"></script>
-
-        <script src="../static/plugins/jquery-sparkline/jquery.sparkline.min.js"></script>
-
-        <!-- App js -->
-        <script src="../static/assets/js/app.js"></script>
-
 
     </body>
 

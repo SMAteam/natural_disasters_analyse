@@ -5,7 +5,11 @@ urlpatterns = [
     # path('', views.test, name='index'), #+ 新增一个新的URL
     path('home', views.home, name='home'),
     path('history', views.history, name='history'),
+    path('history1', views.history1, name='history1'),
     path('detail', views.detail, name='detail'),
+    path('detail1', views.detail1, name='detail1'),
+    path('detail_all', views.detail_all, name='detail_all'),
+
     path('statistical', views.statistical, name='statistical'),
 
     path('map_', views.map_, name='map_'),
