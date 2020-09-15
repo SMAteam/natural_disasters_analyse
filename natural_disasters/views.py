@@ -648,15 +648,19 @@ def map_1_collect(request):
     res = cursor.fetchall()
     context = []
     for cluster in res:
+        print(cluster)
         provinces = []
         citys = []
         areas = []
         events = []
         event_time = ""
         cluster = str(cluster[0])
-        sql = f"select post_id,province,city,area,`time`,`event` from `event` where (task_id={'or task_id='.join(earthquake_id)}) and province like '%{province}%' and cluster = '{cluster}';"
+        # sql = f"select post_id,province,city,area,`time`,`event` from `event` where (task_id={'or task_id='.join(earthquake_id)}) and province like '%{province}%' and cluster = '{cluster}';"
+        sql = f"select post_id,province,city,area,doc_t,info from authority where (task_id={'or task_id='.join(earthquake_id)}) and province like '%{province}%' and number = '{cluster}';"
+
         cursor.execute(sql);
         ret = cursor.fetchall()
+        print(ret)
         for i in (ret):
             if event_time == "":
                 event_time = str(i[4])
